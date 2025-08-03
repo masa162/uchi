@@ -21,7 +21,7 @@ interface Article {
   }
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
+export default function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -29,13 +29,25 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
   const { user } = useAuth()
   const router = useRouter()
 
+  const [slug, setSlug] = useState<string>('')
+
   useEffect(() => {
-    fetchArticle()
-  }, [params.slug])
+    const initParams = async () => {
+      const { slug } = await params
+      setSlug(slug)
+    }
+    initParams()
+  }, [params])
+
+  useEffect(() => {
+    if (slug) {
+      fetchArticle()
+    }
+  }, [slug])
 
   const fetchArticle = async () => {
     try {
-      const response = await fetch(`/api/articles/${params.slug}`)
+      const response = await fetch(`/api/articles/${slug}`)
       if (response.ok) {
         const data = await response.json()
         setArticle(data)
