@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import PasswordGate from '@/components/PasswordGate'
 import AuthForm from '@/components/AuthForm'
+import AuthenticatedLayout from '@/components/AuthenticatedLayout'
 
 export default function Home() {
   const [hasPassword, setHasPassword] = useState(false)
@@ -33,8 +34,8 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <AuthenticatedLayout>
+      <nav className="bg-white shadow mb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -55,53 +56,51 @@ export default function Home() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              うちのきろくへようこそ
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              家族の思い出をアーカイブしていきましょう
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="py-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            おかえりなさい 🏠
+          </h2>
+          <p className="text-lg text-gray-600 mb-8">
+            今日も家族の大切な思い出を、やさしく残していきましょう 💝
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <button
                 onClick={() => window.location.href = '/articles'}
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-left border-2 border-transparent hover:border-blue-200"
+                className="bg-base-100 p-6 rounded-lg shadow hover:shadow-xl transition ease-in-out hover:scale-[102%] text-left border-2 border-transparent hover:border-primary-light"
               >
                 <div className="flex items-center mb-3">
                   <span className="text-2xl mr-3">📚</span>
                   <h3 className="text-xl font-semibold text-gray-800">記事一覧</h3>
                 </div>
-                <p className="text-gray-600">投稿された記事を見る</p>
+                <p className="text-gray-600">みんなの思い出を見る</p>
               </button>
               
               <button
                 onClick={() => window.location.href = '/articles/new'}
-                className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-left border-2 border-indigo-200 hover:border-indigo-300"
+                className="bg-gradient-to-br from-primary-light to-accent-yellow p-6 rounded-lg shadow hover:shadow-xl transition ease-in-out hover:scale-[102%] text-left border-2 border-primary hover:border-primary-dark"
               >
                 <div className="flex items-center mb-3">
                   <span className="text-2xl mr-3">✍️</span>
-                  <h3 className="text-xl font-semibold text-indigo-800">新しい記事</h3>
+                  <h3 className="text-xl font-semibold text-primary-dark">新しい記事</h3>
                 </div>
-                <p className="text-indigo-600">新しい記事を投稿する</p>
+                <p className="text-primary">新しい思い出を書く</p>
               </button>
               
               <button
                 onClick={() => window.location.href = '/profile'}
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-left border-2 border-transparent hover:border-green-200"
+                className="bg-base-100 p-6 rounded-lg shadow hover:shadow-xl transition ease-in-out hover:scale-[102%] text-left border-2 border-transparent hover:border-accent-brown"
               >
                 <div className="flex items-center mb-3">
                   <span className="text-2xl mr-3">👤</span>
                   <h3 className="text-xl font-semibold text-gray-800">プロフィール</h3>
                 </div>
-                <p className="text-gray-600">あなたのプロフィールを設定</p>
+                <p className="text-gray-600">あなたについて教えてください</p>
               </button>
             </div>
-          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AuthenticatedLayout>
   )
 }

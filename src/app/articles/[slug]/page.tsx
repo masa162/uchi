@@ -3,6 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
+import Link from 'next/link'
+import AuthenticatedLayout from '@/components/AuthenticatedLayout'
 
 interface Article {
   id: string
@@ -21,10 +27,20 @@ interface Article {
   }
 }
 
-export default function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+export default function ArticlePage({ params }: { params: Promise<{ slug:string }> }) {
   const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  
+  // コメント関連の状態
+  const [comments, setComments] = useState<any[]>([])
+  const [newComment, setNewComment] = useState('')
+  const [commentLoading, setCommentLoading] = useState(false)
+  
+  // いいね関連の状態
+  const [likeCount, setLikeCount] = useState(0)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeLoading, setLikeLoading] = useState(false)
   
   const { user } = useAuth()
   const router = useRouter()
@@ -42,6 +58,8 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   useEffect(() => {
     if (slug) {
       fetchArticle()
+      fetchComments()
+      fetchLikeStatus()
     }
   }, [slug])
 
@@ -63,21 +81,86 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
     }
   }
 
+  // コメント取得
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`/api/articles/${slug}/comments`)
+      if (response.ok) {
+        const data = await response.json()
+        setComments(data.comments || [])
+      }
+    } catch (error) {
+      console.error('コメントの取得に失敗しました:', error)
+    }
+  }
+
+  // いいね状態取得
+  const fetchLikeStatus = async () => {
+    try {
+      const response = await fetch(`/api/articles/${slug}/like`)
+      if (response.ok) {
+        const data = await response.json()
+        setLikeCount(data.likeCount)
+        setIsLiked(data.isLiked)
+      }
+    } catch (error) {
+      console.error('いいね状態の取得に失敗しました:', error)
+    }
+  }
+
+  // コメント投稿
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newComment.trim()) return
+
+    setCommentLoading(true)
+    try {
+      const response = await fetch(`/api/articles/${slug}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newComment.trim() })
+      })
+
+      if (response.ok) {
+        const comment = await response.json()
+        setComments(prev => [...prev, comment])
+        setNewComment('')
+      }
+    } catch (error) {
+      console.error('コメント投稿に失敗しました:', error)
+    } finally {
+      setCommentLoading(false)
+    }
+  }
+
+  // いいねトグル
+  const handleLikeToggle = async () => {
+    if (likeLoading) return
+
+    setLikeLoading(true)
+    try {
+      const response = await fetch(`/api/articles/${slug}/like`, {
+        method: 'POST'
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setLikeCount(data.likeCount)
+        setIsLiked(data.isLiked)
+      }
+    } catch (error) {
+      console.error('いいね処理に失敗しました:', error)
+    } finally {
+      setLikeLoading(false)
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     })
-  }
-
-  // Markdown風のテキストを簡易的にHTMLに変換
-  const formatContent = (content: string) => {
-    return content
-      .replace(/\n/g, '<br>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/`(.*?)`/g, '<code>$1</code>')
   }
 
   if (!user) {
@@ -89,8 +172,8 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <AuthenticatedLayout>
+      <nav className="bg-white shadow mb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -122,8 +205,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <div className="py-6">
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto mb-4"></div>
@@ -175,32 +257,103 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
                   
                   <div className="flex flex-wrap gap-2 mb-6">
                     {article.category && (
-                      <span className="inline-block bg-indigo-100 text-indigo-800 text-sm px-3 py-1 rounded-full">
+                      <Link href={`/categories/${article.category}`} className="inline-block bg-indigo-100 text-indigo-800 text-sm px-3 py-1 rounded-full hover:bg-indigo-200 transition-colors">
                         📁 {article.category}
-                      </span>
+                      </Link>
                     )}
                     {article.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
-                      >
+                      <Link href={`/tags/${tag}`} key={index} className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full hover:bg-gray-200 transition-colors">
                         #{tag}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </header>
                 
                 <div 
                   className="prose max-w-none text-gray-800 leading-relaxed"
-                  dangerouslySetInnerHTML={{ 
-                    __html: formatContent(article.content)
-                  }}
-                />
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                  >
+                    {article.content}
+                  </ReactMarkdown>
+                </div>
+
+                {/* いいねボタン */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={handleLikeToggle}
+                    disabled={likeLoading}
+                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      isLiked
+                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    } ${likeLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className="mr-2">
+                      {isLiked ? '❤️' : '🤍'}
+                    </span>
+                    いいね {likeCount > 0 && `(${likeCount})`}
+                  </button>
+                </div>
+
+                {/* コメントセクション */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    コメント ({comments.length})
+                  </h3>
+
+                  {/* コメント投稿フォーム */}
+                  <form onSubmit={handleCommentSubmit} className="mb-6">
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="コメントを書く..."
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      disabled={commentLoading}
+                    />
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        type="submit"
+                        disabled={commentLoading || !newComment.trim()}
+                        className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {commentLoading ? '投稿中...' : 'コメント投稿'}
+                      </button>
+                    </div>
+                  </form>
+
+                  {/* コメント一覧 */}
+                  <div className="space-y-4">
+                    {comments.length === 0 ? (
+                      <p className="text-gray-500 text-center py-8">
+                        まだコメントがありません。最初のコメントを投稿しましょう！
+                      </p>
+                    ) : (
+                      comments.map((comment) => (
+                        <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium text-gray-900">
+                              {comment.user.name || comment.user.email}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                              {formatDate(comment.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 whitespace-pre-wrap">
+                            {comment.content}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </article>
           ) : null}
-        </div>
-      </main>
-    </div>
+      </div>
+    </AuthenticatedLayout>
   )
 }

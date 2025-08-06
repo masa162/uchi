@@ -7,12 +7,7 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['*']
     }
   },
-  // 開発環境でのホスト設定
-  ...(process.env.NODE_ENV === 'development' && {
-    devIndicators: {
-      buildActivity: false
-    }
-  })
+  
 };
 
 export default nextConfig;
