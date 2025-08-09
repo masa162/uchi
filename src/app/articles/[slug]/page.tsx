@@ -33,7 +33,12 @@ export default function ArticlePage({ params }: { params: Promise<{ slug:string 
   const [error, setError] = useState('')
   
   // コメント関連の状態
-  const [comments, setComments] = useState<any[]>([])
+  const [comments, setComments] = useState<Array<{
+    id: string;
+    content: string;
+    createdAt: string;
+    user: { name: string | null; email?: string };
+  }>>([])
   const [newComment, setNewComment] = useState('')
   const [commentLoading, setCommentLoading] = useState(false)
   

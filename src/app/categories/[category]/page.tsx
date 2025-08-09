@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -19,22 +19,16 @@ interface Article {
   }
 }
 
-export default function CategoryArticlePage({ params }: { params: { category: string } }) {
+export default function CategoryArticlePage({ params }: { params: Promise<{ category: string }> }) {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const category = decodeURIComponent(params.category)
+  const [category, setCategory] = useState('')
 
   const { user } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    if (category) {
-      fetchArticles()
-    }
-  }, [category])
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       const response = await fetch(`/api/articles/category/${category}`)
       if (response.ok) {
@@ -48,7 +42,22 @@ export default function CategoryArticlePage({ params }: { params: { category: st
     } finally {
       setLoading(false)
     }
-  }
+  }, [category])
+
+  useEffect(() => {
+    const initializeCategory = async () => {
+      const resolvedParams = await params
+      const decodedCategory = decodeURIComponent(resolvedParams.category)
+      setCategory(decodedCategory)
+    }
+    initializeCategory()
+  }, [params])
+
+  useEffect(() => {
+    if (category) {
+      fetchArticles()
+    }
+  }, [category, fetchArticles])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP', {

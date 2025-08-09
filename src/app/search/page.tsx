@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import AuthenticatedLayout from '@/components/AuthenticatedLayout'
 import Link from 'next/link'
@@ -19,7 +19,7 @@ interface Article {
   }
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState('')
@@ -169,5 +169,13 @@ export default function SearchPage() {
         )}
       </div>
     </AuthenticatedLayout>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchPageContent />
+    </Suspense>
   )
 }

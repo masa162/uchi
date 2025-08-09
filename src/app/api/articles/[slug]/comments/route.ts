@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 // 特定記事のコメント一覧取得
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { slug } = params
+    const { slug } = await params
 
     // 記事を取得
     const article = await prisma.article.findUnique({
@@ -61,7 +61,7 @@ export async function GET(
 // 新しいコメントを投稿
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -70,7 +70,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { slug } = params
+    const { slug } = await params
     const { content } = await request.json()
 
     if (!content || content.trim() === '') {

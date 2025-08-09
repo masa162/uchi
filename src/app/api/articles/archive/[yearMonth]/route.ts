@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { yearMonth: string } }
+  { params }: { params: Promise<{ yearMonth: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -16,7 +16,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { yearMonth } = params
+    const { yearMonth } = await params
     
     // YYYY-MM形式の検証
     const yearMonthRegex = /^\d{4}-\d{2}$/

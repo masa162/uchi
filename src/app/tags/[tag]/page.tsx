@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -19,22 +19,16 @@ interface Article {
   }
 }
 
-export default function TagArticlePage({ params }: { params: { tag: string } }) {
+export default function TagArticlePage({ params }: { params: Promise<{ tag: string }> }) {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const tag = decodeURIComponent(params.tag)
+  const [tag, setTag] = useState('')
 
   const { user } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    if (tag) {
-      fetchArticles()
-    }
-  }, [tag])
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       const response = await fetch(`/api/articles/tag/${tag}`)
       if (response.ok) {
@@ -48,7 +42,22 @@ export default function TagArticlePage({ params }: { params: { tag: string } }) 
     } finally {
       setLoading(false)
     }
-  }
+  }, [tag])
+
+  useEffect(() => {
+    const initializeTag = async () => {
+      const resolvedParams = await params
+      const decodedTag = decodeURIComponent(resolvedParams.tag)
+      setTag(decodedTag)
+    }
+    initializeTag()
+  }, [params])
+
+  useEffect(() => {
+    if (tag) {
+      fetchArticles()
+    }
+  }, [tag, fetchArticles])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP', {
