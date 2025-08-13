@@ -205,7 +205,7 @@ ssh conoha-vps "tail -10 /tmp/uchi-alerts.log"
 - [x] SSH接続情報永続化 (この CLAUDE.md更新)
 
 ### 進行中 🔄
-- [ ] 環境クリーンアップ自動化
+- [x] 環境クリーンアップ自動化 (scripts/cleanup-environment.sh)
 - [ ] SSH接続最適化
 
 ### 次期予定 📋
