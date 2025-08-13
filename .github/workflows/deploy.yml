@@ -29,11 +29,30 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.VPS_HOST }} >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          
+          # SSH設定ファイル作成
+          cat > ~/.ssh/config << EOF
+          Host vps
+            HostName ${{ env.VPS_HOST }}
+            User ${{ env.VPS_USER }}
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+          
+          # SSH鍵の形式確認とテスト
+          echo "🔍 SSH Key validation:"
+          ssh-keygen -l -f ~/.ssh/id_rsa || echo "Key format check failed"
+          
+          # 接続テスト
+          echo "🔗 Testing SSH connection:"
+          ssh vps "echo 'SSH connection successful'" || echo "Initial connection failed"
           
       - name: 🧹 Pre-deployment cleanup
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '🧹 Stopping existing processes...'
             pkill -f 'next-server' || true
@@ -43,7 +62,7 @@ jobs:
           
       - name: 📥 Pull latest code
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '📥 Pulling latest code...'
             git fetch origin
@@ -53,7 +72,7 @@ jobs:
           
       - name: 📋 Install dependencies
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '📋 Installing dependencies...'
             npm ci --only=production
@@ -61,7 +80,7 @@ jobs:
           
       - name: 🗄️ Database operations
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '🗄️ Updating database...'
             npx prisma generate
@@ -70,7 +89,7 @@ jobs:
           
       - name: 🏗️ Build application
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '🏗️ Building application...'
             npm run build
@@ -78,7 +97,7 @@ jobs:
           
       - name: 🚀 Start application
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '🚀 Starting application...'
             nohup ./start-with-env.sh > deploy.log 2>&1 &
@@ -98,7 +117,7 @@ jobs:
             fi
             if [ $i -eq 6 ]; then
               echo "❌ Health check failed after 6 attempts"
-              ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+              ssh vps "
                 cd ${{ env.APP_PATH }}
                 echo '📋 Application logs:'
                 tail -50 deploy.log
@@ -110,7 +129,7 @@ jobs:
       - name: 📊 Deployment summary
         if: always()
         run: |
-          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          ssh vps "
             cd ${{ env.APP_PATH }}
             echo '📊 Deployment Summary:'
             echo 'Git Status:'
