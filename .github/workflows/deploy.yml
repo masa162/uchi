@@ -79,9 +79,15 @@ jobs:
         run: |
           ssh vps "
             echo '🧹 Stopping existing processes...'
-            pkill -f 'next-server' || echo 'No next-server processes found'
-            pkill -f 'npm run dev' || echo 'No npm dev processes found'
-            pkill -f 'node.*next' || echo 'No node next processes found'
+            
+            # プロセス停止（エラーを無視）
+            set +e
+            pkill -f 'next-server' 2>/dev/null
+            pkill -f 'npm run dev' 2>/dev/null  
+            pkill -f 'node.*next' 2>/dev/null
+            set -e
+            
+            echo 'Process cleanup completed'
             
             echo '📁 Changing to app directory...'
             cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }

@@ -1,0 +1,75 @@
+name: 🚀 うちのきろく Simple Deploy
+
+on:
+  workflow_dispatch:  # 手動実行専用
+  
+env:
+  VPS_HOST: '160.251.136.92'
+  VPS_USER: 'root'
+  APP_PATH: '/var/www/uchi'
+
+jobs:
+  simple-deploy:
+    name: 🚀 Simple Deploy to VPS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔐 Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          cat > ~/.ssh/config << EOF
+          Host vps
+            HostName ${{ env.VPS_HOST }}
+            User ${{ env.VPS_USER }}
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+          
+      - name: 🚀 Simple Deploy
+        run: |
+          echo "🚀 Starting simple deployment..."
+          
+          ssh vps << 'DEPLOY_EOF'
+            echo "📁 Navigating to app directory..."
+            cd /var/www/uchi
+            
+            echo "🔄 Updating code..."
+            git pull origin main
+            
+            echo "📦 Installing dependencies..."
+            npm ci --only=production
+            
+            echo "🏗️ Building application..."
+            npm run build
+            
+            echo "🧹 Stopping old processes..."
+            pkill -f next || echo "No processes to stop"
+            
+            echo "🚀 Starting application..."
+            nohup ./start-with-env.sh > deploy.log 2>&1 &
+            
+            echo "✅ Deployment completed!"
+            sleep 5
+            
+            echo "📊 Status check:"
+            ps aux | grep -E "(next|npm)" | grep -v grep || echo "No processes running"
+          DEPLOY_EOF
+          
+      - name: ✅ Health check
+        run: |
+          echo "✅ Performing health check..."
+          sleep 10
+          if curl -f -s https://uchinokiroku.com > /dev/null; then
+            echo "✅ Site is responding"
+          else
+            echo "⚠️ Site may still be starting up"
+          fi
