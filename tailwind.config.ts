@@ -6,6 +6,7 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'media',
   theme: {
     extend: {
       colors: {
@@ -40,6 +41,21 @@ const config: Config = {
           "base-100": "#ffffff",
           "base-200": "#f7f8fa",
           "base-300": "#d6eadd",
+          "info": "#3abff8",
+          "success": "#7cbf8c",
+          "warning": "#fbbd23",
+          "error": "#f87272",
+        }
+      },
+      {
+        dark: {
+          "primary": "#7cbf8c",
+          "secondary": "#f3eac2", 
+          "accent": "#9d856a",
+          "neutral": "#1f2937",
+          "base-100": "#111827",
+          "base-200": "#1f2937",
+          "base-300": "#374151",
           "info": "#3abff8",
           "success": "#7cbf8c",
           "warning": "#fbbd23",

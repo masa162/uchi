@@ -1,0 +1,113 @@
+name: 🏠 うちのきろく CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  lint-and-type-check:
+    name: 📝 Lint & Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📋 Install dependencies
+        run: npm ci
+        
+      - name: 🔍 TypeScript type check
+        run: npm run type-check
+        
+      - name: ✨ Lint check
+        run: npm run lint
+
+  build-test:
+    name: 🏗️ Build Test
+    runs-on: ubuntu-latest
+    needs: lint-and-type-check
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📋 Install dependencies
+        run: npm ci
+        
+      - name: 🗄️ Generate Prisma client
+        run: npm run prisma:generate
+        
+      - name: ✅ Validate Prisma schema
+        run: npm run prisma:validate
+        
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          # ビルド時に必要な環境変数（実際の値ではなくダミー）
+          NEXTAUTH_SECRET: "dummy-secret-for-build"
+          NEXTAUTH_URL: "https://example.com"
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          NEXT_PUBLIC_SITE_PASSWORD: "dummy"
+
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+    needs: lint-and-type-check
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📋 Install dependencies
+        run: npm ci
+        
+      - name: 🧪 Run tests
+        run: npm run test
+
+  ci-status:
+    name: ✅ CI Status
+    runs-on: ubuntu-latest
+    needs: [lint-and-type-check, build-test, test]
+    if: always()
+    
+    steps:
+      - name: 🎉 CI Success
+        if: ${{ needs.lint-and-type-check.result == 'success' && needs.build-test.result == 'success' && needs.test.result == 'success' }}
+        run: |
+          echo "🎉 すべてのチェックが成功しました！"
+          echo "✅ Lint & Type Check: 成功"
+          echo "✅ Build Test: 成功" 
+          echo "✅ Test: 成功"
+          
+      - name: ❌ CI Failure
+        if: ${{ needs.lint-and-type-check.result == 'failure' || needs.build-test.result == 'failure' || needs.test.result == 'failure' }}
+        run: |
+          echo "❌ CIチェックで問題が検出されました"
+          echo "Lint & Type Check: ${{ needs.lint-and-type-check.result }}"
+          echo "Build Test: ${{ needs.build-test.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          exit 1

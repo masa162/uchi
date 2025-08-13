@@ -1,0 +1,18 @@
+日時,作業者,作業内容,対象ファイル,環境,方法,目的,ステータス,備考
+2025-08-13 10:10,Claude Code,環境クリーンアップスクリプト作成,scripts/cleanup-environment.sh,ローカル,新規作成,開発効率化,完了,プロセス重複問題解決
+2025-08-13 10:05,Claude Code,CLAUDE.md作成,CLAUDE.md,ローカル,新規作成,情報永続化,完了,SSH情報・開発規約記録
+2025-08-13 09:55,Claude Code,LINE Provider設定修正,src/lib/auth.ts,VPS,SCP転送・編集,認証問題解決,完了,id_token_signed_response_alg追加
+2025-08-13 09:50,Claude Code,LINE debugページ作成,src/app/auth/line-debug/page.tsx,VPS,SCP転送・新規作成,デバッグ強化,完了,専用テスト環境
+2025-08-13 09:45,Claude Code,VPS Next.jsプロセス停止,/var/www/uchi,VPS,SSH・systemctl,環境クリーン化,完了,重複プロセス4個削除
+2025-08-13 09:40,Claude Code,ConoHa VPS SSH接続復旧,key-2025-08-03-13-24.pem,ローカル→VPS,SSH鍵認証,アクセス復旧,完了,正しい鍵ファイル使用
+2025-08-10 16:25,Claude Code,環境変数付き起動スクリプト,start-with-env.sh,VPS,新規作成,安定起動,完了,環境変数の確実な読み込み
+2025-08-10 15:20,Claude Code,Google OAuth認証成功確認,src/lib/auth.ts,VPS,設定修正,認証機能,完了,本番環境で動作確認
+2025-08-10 14:30,Claude Code,Prismaマイグレーション適用,prisma/migrations,VPS,コマンド実行,DB同期,完了,ベースライン設定
+2025-08-10 13:45,Claude Code,Let's Encrypt SSL証明書取得,/etc/letsencrypt,VPS,certbot実行,HTTPS化,完了,自動更新設定
+2025-08-10 12:30,Claude Code,Nginx設定追加,/etc/nginx/sites-available/uchinokiroku.com,VPS,設定ファイル編集,リバースプロキシ,完了,大容量ヘッダー対応
+2025-08-10 11:15,Claude Code,独自ドメイン設定,DNS・環境変数,namecheap・VPS,DNS設定・Next.js設定,本番化,完了,uchinokiroku.com運用開始
+2025-08-09 16:00,Claude Code,Docker環境整備,docker-compose.yml・Dockerfile,ローカル,設定ファイル作成,開発環境,完了,Next.js 15対応
+2025-08-06 14:20,Claude Code,プロジェクト初期セットアップ,package.json・各種設定,ローカル,npm install・設定,基盤構築,完了,Next.js 15 + Prisma + Tailwind2025-08-13 10:02,Claude Code,代行作業ログシステム構築,docs/代行作業log/,ローカル,新規作成,作業履歴管理効率化,完了,CSV・Markdown・スクリプト一式
+2025-08-13 10:08,Claude Code,LINE Login email必須問題修正,prisma/schema.prisma・users table,VPS,SQL ALTER TABLE・Prisma再生成,LINE認証でemail未提供問題解決,完了,users.email NULL許可・Next.js再起動
+2025-08-13 10:12,Claude Code,LINE Login認証成功確認,全システム,本番環境,実機テスト,認証機能の完全動作確認,完了,Chrome・Firefox両方で成功・本格運用開始
+2025-08-13 10:38,Claude Code,ダークモード対応・視認性改善,src/components/PasswordGate.tsx・tailwind.config.ts,VPS,CSS修正・Tailwind設定,Safari・macOSダークモード視認性向上,完了,入力フィールド・テキストのコントラスト改善

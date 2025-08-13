@@ -6,7 +6,13 @@
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'No tests specified yet' && exit 0",
+    "ci": "npm run type-check && npm run lint && npm run build",
+    "prisma:validate": "npx prisma validate",
+    "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
