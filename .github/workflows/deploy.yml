@@ -27,9 +27,11 @@ jobs:
       - name: 🔐 Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
+          
+          # SSH鍵をBase64デコードして保存（改行問題回避）
+          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           
           # SSH設定ファイル作成
           cat > ~/.ssh/config << EOF
@@ -42,13 +44,23 @@ jobs:
           EOF
           chmod 600 ~/.ssh/config
           
-          # SSH鍵の形式確認とテスト
-          echo "🔍 SSH Key validation:"
-          ssh-keygen -l -f ~/.ssh/id_rsa || echo "Key format check failed"
+          # SSH鍵の内容とフォーマット確認
+          echo "🔍 SSH Key debugging:"
+          echo "Key file size: $(wc -c ~/.ssh/id_rsa)"
+          echo "First line: $(head -1 ~/.ssh/id_rsa)"
+          echo "Last line: $(tail -1 ~/.ssh/id_rsa)"
           
-          # 接続テスト
-          echo "🔗 Testing SSH connection:"
-          ssh vps "echo 'SSH connection successful'" || echo "Initial connection failed"
+          # SSH鍵の形式確認
+          echo "🔍 SSH Key validation:"
+          ssh-keygen -l -f ~/.ssh/id_rsa 2>&1 || echo "Key format validation failed"
+          
+          # OpenSSL形式確認
+          echo "🔍 OpenSSL validation:"
+          openssl rsa -in ~/.ssh/id_rsa -check -noout 2>&1 || echo "OpenSSL validation failed"
+          
+          # 接続テスト（詳細ログ付き）
+          echo "🔗 Testing SSH connection with verbose output:"
+          ssh -v vps "echo 'SSH connection successful'" 2>&1 || echo "Initial connection failed"
           
       - name: 🧹 Pre-deployment cleanup
         run: |

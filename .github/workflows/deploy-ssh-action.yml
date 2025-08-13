@@ -1,0 +1,91 @@
+name: 🚀 うちのきろく Deploy (SSH Action)
+
+on:
+  workflow_dispatch:  # 手動実行用
+  push:
+    branches: [main]
+    paths:
+      - '!.github/workflows/deploy.yml'  # 通常のdeploy.ymlと競合回避
+
+env:
+  VPS_HOST: '160.251.136.92'
+  VPS_USER: 'root'
+  APP_PATH: '/var/www/uchi'
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to VPS (SSH Action)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🚀 Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "🚀 Starting deployment..."
+            
+            # アプリケーションディレクトリに移動
+            cd ${{ env.APP_PATH }}
+            
+            echo "🧹 Stopping existing processes..."
+            pkill -f 'next-server' || true
+            pkill -f 'npm run dev' || true
+            sleep 3
+            
+            echo "📥 Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
+            
+            echo "📋 Installing dependencies..."
+            npm ci --only=production
+            
+            echo "🗄️ Updating database..."
+            npx prisma generate
+            npx prisma db push --accept-data-loss || true
+            
+            echo "🏗️ Building application..."
+            npm run build
+            
+            echo "🚀 Starting application..."
+            nohup ./start-with-env.sh > deploy.log 2>&1 &
+            sleep 10
+            
+            echo "✅ Deployment completed!"
+            echo "📊 Process status:"
+            ps aux | grep -E '(next|npm)' | grep -v grep || echo 'No processes found'
+            
+            echo "📋 Latest logs:"
+            tail -20 deploy.log 2>/dev/null || echo 'No deploy log found'
+            
+      - name: ✅ Health check
+        run: |
+          echo "✅ Performing health check..."
+          for i in {1..6}; do
+            if curl -f -s https://uchinokiroku.com > /dev/null; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            else
+              echo "⏳ Waiting for application to start (attempt $i/6)..."
+              sleep 10
+            fi
+          done
+          echo "❌ Health check failed after 6 attempts"
+          exit 1
+          
+      - name: 📢 Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "🎉 Deployment successful!"
+            echo "✅ Site: https://uchinokiroku.com"
+          else
+            echo "❌ Deployment failed!"
+            echo "🔍 Check logs for details"
+          fi
