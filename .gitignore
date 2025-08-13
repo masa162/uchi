@@ -44,3 +44,8 @@ next-env.d.ts
 
 # images as memo
 docs/img/
+
+# Archive files
+*.tar.gz
+*.tar
+*.zip
