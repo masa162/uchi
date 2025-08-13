@@ -14,7 +14,7 @@ export async function GET() {
       version: process.env.npm_package_version || 'unknown',
       checks: {
         database: false,
-        memory: false,
+        memory: {},
         disk: false
       }
     }
