@@ -192,6 +192,23 @@ ssh conoha-vps "tail -20 /var/log/uchi-health.log"
 ssh conoha-vps "tail -10 /tmp/uchi-alerts.log"
 ```
 
+### ⚡ 接続事前チェック・タイムアウト最適化
+```bash
+# 高速接続診断 (推奨: 作業開始前)
+./scripts/connection-check.sh quick
+
+# VPS含む詳細チェック
+./scripts/connection-check.sh quick --include-vps
+
+# 個別接続テスト
+./scripts/connection-check.sh ssh conoha-vps 10
+./scripts/connection-check.sh git
+./scripts/connection-check.sh docker
+
+# 問題解決提案
+./scripts/connection-check.sh fix
+```
+
 ---
 
 ## 📋 現在の開発状況
@@ -206,7 +223,7 @@ ssh conoha-vps "tail -10 /tmp/uchi-alerts.log"
 
 ### 進行中 🔄
 - [x] 環境クリーンアップ自動化 (scripts/cleanup-environment.sh)
-- [ ] SSH接続最適化
+- [x] 通信タイムアウト最適化 (SSH/Git/Docker設定完了)
 
 ### 次期予定 📋
 - [ ] 簡易POST機能実装
