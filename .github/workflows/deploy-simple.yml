@@ -1,7 +1,11 @@
 name: 🚀 うちのきろく Simple Deploy
 
 on:
-  workflow_dispatch:  # 手動実行専用
+  workflow_dispatch:  # 手動実行
+  push:
+    branches: [main]
+    paths:
+      - '!.github/workflows/deploy.yml'  # メインdeployと競合回避
   
 env:
   VPS_HOST: '160.251.136.92'

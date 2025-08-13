@@ -75,76 +75,39 @@ jobs:
             echo 'Running processes:' \$(ps aux | grep -E '(next|npm)' | grep -v grep | wc -l) 'processes'
           "
           
-      - name: 🧹 Pre-deployment cleanup
+      - name: 🚀 Deploy Application
         run: |
-          ssh vps "
-            echo '🧹 Stopping existing processes...'
+          echo "🚀 Starting deployment to VPS..."
+          
+          ssh vps << 'DEPLOY_EOF'
+            echo "📁 Navigating to app directory..."
+            cd /var/www/uchi
             
-            # プロセス停止（エラーを無視）
-            set +e
-            pkill -f 'next-server' 2>/dev/null
-            pkill -f 'npm run dev' 2>/dev/null  
-            pkill -f 'node.*next' 2>/dev/null
-            set -e
+            echo "🧹 Stopping existing processes..."
+            pkill -f next || echo "No processes to stop"
             
-            echo 'Process cleanup completed'
+            echo "🔄 Updating code..."
+            git pull origin main
             
-            echo '📁 Changing to app directory...'
-            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
-            echo 'Current directory:' \$(pwd)
+            echo "📦 Installing dependencies..."
+            npm ci --only=production
             
-            sleep 3
-          "
-          
-      - name: 📥 Pull latest code
-        run: |
-          ssh vps "
-            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
-            echo '📥 Pulling latest code...'
-            git fetch origin || { echo 'Git fetch failed'; exit 1; }
-            git reset --hard origin/main || { echo 'Git reset failed'; exit 1; }
-            git clean -fd || echo 'Git clean completed with warnings'
-            echo 'Latest commit:' \$(git log -1 --oneline)
-          "
-          
-      - name: 📋 Install dependencies
-        run: |
-          ssh vps "
-            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
-            echo '📋 Installing dependencies...'
-            npm ci --only=production || { echo 'npm ci failed'; exit 1; }
-            echo 'Dependencies installed successfully'
-          "
-          
-      - name: 🗄️ Database operations
-        run: |
-          ssh vps "
-            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
-            echo '🗄️ Updating database...'
-            npx prisma generate || { echo 'Prisma generate failed'; exit 1; }
-            npx prisma db push --accept-data-loss || echo 'Database push completed with warnings'
-            echo 'Database operations completed'
-          "
-          
-      - name: 🏗️ Build application
-        run: |
-          ssh vps "
-            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
-            echo '🏗️ Building application...'
-            npm run build || { echo 'Build failed'; exit 1; }
-            echo 'Build completed successfully'
-          "
-          
-      - name: 🚀 Start application
-        run: |
-          ssh vps "
-            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
-            echo '🚀 Starting application...'
-            chmod +x ./start-with-env.sh || echo 'Could not make start script executable'
+            echo "🗄️ Updating database..."
+            npx prisma generate
+            npx prisma db push --accept-data-loss || echo "Database push completed"
+            
+            echo "🏗️ Building application..."
+            npm run build
+            
+            echo "🚀 Starting application..."
             nohup ./start-with-env.sh > deploy.log 2>&1 &
-            sleep 10
-            echo 'Application startup initiated'
-          "
+            
+            echo "✅ Deployment completed!"
+            sleep 5
+            
+            echo "📊 Status check:"
+            ps aux | grep -E "(next|npm)" | grep -v grep || echo "Application starting..."
+          DEPLOY_EOF
           
       - name: ✅ Health check
         run: |
