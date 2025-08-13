@@ -16,3 +16,4 @@
 2025-08-13 10:08,Claude Code,LINE Login email必須問題修正,prisma/schema.prisma・users table,VPS,SQL ALTER TABLE・Prisma再生成,LINE認証でemail未提供問題解決,完了,users.email NULL許可・Next.js再起動
 2025-08-13 10:12,Claude Code,LINE Login認証成功確認,全システム,本番環境,実機テスト,認証機能の完全動作確認,完了,Chrome・Firefox両方で成功・本格運用開始
 2025-08-13 10:38,Claude Code,ダークモード対応・視認性改善,src/components/PasswordGate.tsx・tailwind.config.ts,VPS,CSS修正・Tailwind設定,Safari・macOSダークモード視認性向上,完了,入力フィールド・テキストのコントラスト改善
+2025-08-13 10:58,Claude Code,Phase 1 CI/CD基本設定完了,CI/CD自動化,ローカル・GitHub,GitHub Actions設定・プッシュ,CI/CD Phase1基本インフラ構築,完了,完了

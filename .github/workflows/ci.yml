@@ -102,6 +102,9 @@ jobs:
           echo "✅ Lint & Type Check: 成功"
           echo "✅ Build Test: 成功" 
           echo "✅ Test: 成功"
+          echo ""
+          echo "🚀 デプロイ準備完了！"
+          echo "📝 PR承認後、mainブランチマージで自動デプロイが実行されます"
           
       - name: ❌ CI Failure
         if: ${{ needs.lint-and-type-check.result == 'failure' || needs.build-test.result == 'failure' || needs.test.result == 'failure' }}
@@ -110,4 +113,30 @@ jobs:
           echo "Lint & Type Check: ${{ needs.lint-and-type-check.result }}"
           echo "Build Test: ${{ needs.build-test.result }}"
           echo "Test: ${{ needs.test.result }}"
+          echo ""
+          echo "🔧 修正が必要な項目を確認してください"
+          echo "📋 修正後、再度プッシュしてCIを実行してください"
           exit 1
+
+  security-check:
+    name: 🔒 Security Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Check for secrets in files
+        run: |
+          echo "🔍 Checking for potential secrets..."
+          
+          # 秘密情報パターンチェック
+          if grep -r "GOCSPX-" . --exclude-dir=.git --exclude-dir=node_modules || \
+             grep -r "928722754697" . --exclude-dir=.git --exclude-dir=node_modules || \
+             grep -r "51b66feb" . --exclude-dir=.git --exclude-dir=node_modules; then
+            echo "❌ 秘密情報が検出されました。マスク化してください。"
+            exit 1
+          else
+            echo "✅ 秘密情報は検出されませんでした。"
+          fi
