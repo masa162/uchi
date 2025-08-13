@@ -1,0 +1,166 @@
+name: 🔍 うちのきろく 監視システム
+
+on:
+  schedule:
+    # 毎5分実行
+    - cron: '*/5 * * * *'
+  workflow_dispatch:  # 手動実行も可能
+  
+env:
+  SITE_URL: 'https://uchinokiroku.com'
+  VPS_HOST: '160.251.136.92'
+  VPS_USER: 'root'
+
+jobs:
+  health-monitoring:
+    name: 🔍 ヘルスチェック監視
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔐 Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          cat > ~/.ssh/config << EOF
+          Host vps
+            HostName ${{ env.VPS_HOST }}
+            User ${{ env.VPS_USER }}
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: 🌐 Webサイト応答チェック
+        id: website_check
+        run: |
+          echo "🔍 Checking website response..."
+          if curl -f -s --max-time 15 "${{ env.SITE_URL }}" > /dev/null; then
+            echo "✅ Website: Responding"
+            echo "website_status=ok" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Website: Not responding"
+            echo "website_status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🗄️ データベースヘルスチェック
+        id: db_check
+        run: |
+          echo "🔍 Checking database health..."
+          if curl -f -s --max-time 10 "${{ env.SITE_URL }}/api/health/db" > /dev/null; then
+            echo "✅ Database: Healthy"
+            echo "db_status=ok" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Database: Unhealthy"
+            echo "db_status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔐 認証APIヘルスチェック
+        id: auth_check
+        run: |
+          echo "🔍 Checking authentication API..."
+          if curl -f -s --max-time 10 "${{ env.SITE_URL }}/api/health/auth" > /dev/null; then
+            echo "✅ Auth API: Healthy"
+            echo "auth_status=ok" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Auth API: Unhealthy"
+            echo "auth_status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🖥️ VPSシステム監視
+        id: vps_check
+        run: |
+          echo "🔍 Checking VPS system status..."
+          
+          ssh vps << 'MONITOR_EOF'
+            echo "📊 VPS System Status:"
+            
+            # プロセス確認
+            if pgrep -f "next-server|npm.*dev|node.*next" > /dev/null; then
+              echo "✅ Next.js Process: Running"
+              echo "process_status=ok"
+            else
+              echo "❌ Next.js Process: Not found"
+              echo "process_status=failed"
+            fi
+            
+            # ディスク使用量
+            disk_usage=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+            echo "💾 Disk Usage: ${disk_usage}%"
+            
+            # メモリ使用量
+            memory_usage=$(free | awk 'NR==2{printf "%.0f", $3*100/$2 }')
+            echo "🧠 Memory Usage: ${memory_usage}%"
+            
+            # ロードアベレージ
+            load_avg=$(uptime | awk -F'load average:' '{print $2}')
+            echo "⚖️ Load Average:${load_avg}"
+            
+          MONITOR_EOF
+
+      - name: 📊 監視結果サマリー
+        run: |
+          echo "🔍 Health Check Summary:"
+          echo "Website: ${{ steps.website_check.outputs.website_status }}"
+          echo "Database: ${{ steps.db_check.outputs.db_status }}"
+          echo "Auth API: ${{ steps.auth_check.outputs.auth_status }}"
+          
+          # 失敗カウント
+          failures=0
+          [ "${{ steps.website_check.outputs.website_status }}" = "failed" ] && ((failures++))
+          [ "${{ steps.db_check.outputs.db_status }}" = "failed" ] && ((failures++))
+          [ "${{ steps.auth_check.outputs.auth_status }}" = "failed" ] && ((failures++))
+          
+          if [ $failures -eq 0 ]; then
+            echo "🎉 All systems operational!"
+          else
+            echo "⚠️ $failures system(s) have issues"
+          fi
+
+      - name: 🚨 アラート通知 (失敗時)
+        if: |
+          steps.website_check.outputs.website_status == 'failed' ||
+          steps.db_check.outputs.db_status == 'failed' ||
+          steps.auth_check.outputs.auth_status == 'failed'
+        run: |
+          echo "🚨 ALERT: System issues detected!"
+          echo "Website: ${{ steps.website_check.outputs.website_status }}"
+          echo "Database: ${{ steps.db_check.outputs.db_status }}"
+          echo "Auth API: ${{ steps.auth_check.outputs.auth_status }}"
+          echo "Timestamp: $(date)"
+          
+          # TODO: Slack/メール通知の実装
+          echo "Alert logged - notification system to be implemented"
+
+  performance-monitoring:
+    name: 📈 パフォーマンス監視
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'  # 手動実行時のみ
+    
+    steps:
+      - name: 🚀 サイトパフォーマンステスト
+        run: |
+          echo "📈 Running performance tests..."
+          
+          # レスポンス時間測定
+          response_time=$(curl -o /dev/null -s -w '%{time_total}' "${{ env.SITE_URL }}")
+          echo "⏱️ Response Time: ${response_time}s"
+          
+          # ヘルスAPI レスポンス時間
+          health_time=$(curl -o /dev/null -s -w '%{time_total}' "${{ env.SITE_URL }}/api/health")
+          echo "🏥 Health API Time: ${health_time}s"
+          
+          # パフォーマンス判定
+          if (( $(echo "$response_time < 3.0" | bc -l) )); then
+            echo "✅ Performance: Good (< 3s)"
+          elif (( $(echo "$response_time < 5.0" | bc -l) )); then
+            echo "⚠️ Performance: Acceptable (3-5s)"
+          else
+            echo "❌ Performance: Poor (> 5s)"
+          fi
