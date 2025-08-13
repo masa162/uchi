@@ -60,60 +60,84 @@ jobs:
           
           # 接続テスト（詳細ログ付き）
           echo "🔗 Testing SSH connection with verbose output:"
-          ssh -v vps "echo 'SSH connection successful'" 2>&1 || echo "Initial connection failed"
+          ssh vps "echo 'SSH connection successful'" || echo "Initial connection failed"
+          
+      - name: 🔍 VPS Environment Check
+        run: |
+          ssh vps "
+            echo '🔍 VPS Environment Information:'
+            echo 'Hostname:' \$(hostname)
+            echo 'Current user:' \$(whoami)
+            echo 'Working directory:' \$(pwd)
+            echo 'App directory exists:' \$([ -d '${{ env.APP_PATH }}' ] && echo 'YES' || echo 'NO')
+            echo 'Node version:' \$(node --version 2>/dev/null || echo 'Not installed')
+            echo 'NPM version:' \$(npm --version 2>/dev/null || echo 'Not installed')
+            echo 'Running processes:' \$(ps aux | grep -E '(next|npm)' | grep -v grep | wc -l) 'processes'
+          "
           
       - name: 🧹 Pre-deployment cleanup
         run: |
           ssh vps "
-            cd ${{ env.APP_PATH }}
             echo '🧹 Stopping existing processes...'
-            pkill -f 'next-server' || true
-            pkill -f 'npm run dev' || true
+            pkill -f 'next-server' || echo 'No next-server processes found'
+            pkill -f 'npm run dev' || echo 'No npm dev processes found'
+            pkill -f 'node.*next' || echo 'No node next processes found'
+            
+            echo '📁 Changing to app directory...'
+            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
+            echo 'Current directory:' \$(pwd)
+            
             sleep 3
           "
           
       - name: 📥 Pull latest code
         run: |
           ssh vps "
-            cd ${{ env.APP_PATH }}
+            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
             echo '📥 Pulling latest code...'
-            git fetch origin
-            git reset --hard origin/main
-            git clean -fd
+            git fetch origin || { echo 'Git fetch failed'; exit 1; }
+            git reset --hard origin/main || { echo 'Git reset failed'; exit 1; }
+            git clean -fd || echo 'Git clean completed with warnings'
+            echo 'Latest commit:' \$(git log -1 --oneline)
           "
           
       - name: 📋 Install dependencies
         run: |
           ssh vps "
-            cd ${{ env.APP_PATH }}
+            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
             echo '📋 Installing dependencies...'
-            npm ci --only=production
+            npm ci --only=production || { echo 'npm ci failed'; exit 1; }
+            echo 'Dependencies installed successfully'
           "
           
       - name: 🗄️ Database operations
         run: |
           ssh vps "
-            cd ${{ env.APP_PATH }}
+            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
             echo '🗄️ Updating database...'
-            npx prisma generate
-            npx prisma db push --accept-data-loss || true
+            npx prisma generate || { echo 'Prisma generate failed'; exit 1; }
+            npx prisma db push --accept-data-loss || echo 'Database push completed with warnings'
+            echo 'Database operations completed'
           "
           
       - name: 🏗️ Build application
         run: |
           ssh vps "
-            cd ${{ env.APP_PATH }}
+            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
             echo '🏗️ Building application...'
-            npm run build
+            npm run build || { echo 'Build failed'; exit 1; }
+            echo 'Build completed successfully'
           "
           
       - name: 🚀 Start application
         run: |
           ssh vps "
-            cd ${{ env.APP_PATH }}
+            cd ${{ env.APP_PATH }} || { echo 'App directory not found'; exit 1; }
             echo '🚀 Starting application...'
+            chmod +x ./start-with-env.sh || echo 'Could not make start script executable'
             nohup ./start-with-env.sh > deploy.log 2>&1 &
             sleep 10
+            echo 'Application startup initiated'
           "
           
       - name: ✅ Health check
