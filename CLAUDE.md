@@ -5,11 +5,22 @@
 ### ConoHa VPS
 - **IPアドレス**: `160.251.136.92`
 - **ユーザー**: `root`
-- **SSH鍵**: `/Users/nakayamamasayuki/Documents/GitHub/uchi/docs/関連資料/conohaVPS/key-2025-08-03-13-24.pem`
+- **SSH設定名**: `conoha-vps`
+- **SSH鍵**: `/Users/nakayamamasayuki/.ssh/id_ed25519_sinvps_macbook`
 - **接続コマンド**: 
   ```bash
-  ssh -i "/Users/nakayamamasayuki/Documents/GitHub/uchi/docs/関連資料/conohaVPS/key-2025-08-03-13-24.pem" root@160.251.136.92
+  ssh conoha-vps
   ```
+
+### SSH設定ファイル
+**場所**: `/Users/nakayamamasayuki/.ssh/config`
+```bash
+Host conoha-vps
+  HostName 160.251.136.92
+  User root
+  IdentityFile ~/.ssh/id_ed25519_sinvps_macbook
+  IdentitiesOnly yes
+```
 
 ### VPS基本情報
 - **サーバー名**: ConoHa-vps-2025-06-24
@@ -60,11 +71,14 @@
 
 ### VPS接続・操作
 ```bash
-# SSH接続
-ssh -i "/Users/nakayamamasayuki/Documents/GitHub/uchi/docs/関連資料/conohaVPS/key-2025-08-03-13-24.pem" root@160.251.136.92
+# SSH接続 (簡単！)
+ssh conoha-vps
+
+# 接続テスト
+ssh conoha-vps "echo 'SSH接続成功'"
 
 # ファイル転送
-scp -i "/Users/nakayamamasayuki/Documents/GitHub/uchi/docs/関連資料/conohaVPS/key-2025-08-03-13-24.pem" [local_file] root@160.251.136.92:[remote_path]
+scp [local_file] conoha-vps:[remote_path]
 
 # アプリディレクトリ移動
 cd /var/www/uchi
@@ -105,9 +119,10 @@ git log --oneline -5
 ## 🚨 トラブルシューティング
 
 ### SSH接続できない
-1. SSH鍵のパスを確認: `/Users/nakayamamasayuki/Documents/GitHub/uchi/docs/関連資料/conohaVPS/key-2025-08-03-13-24.pem`
-2. 鍵の権限確認: `chmod 600 [key_file]`
-3. SSH agentに追加: `ssh-add [key_file]`
+1. SSH設定確認: `cat ~/.ssh/config | grep -A5 conoha-vps`
+2. SSH鍵権限確認: `chmod 600 ~/.ssh/id_ed25519_sinvps_macbook`
+3. 接続テスト: `ssh -o ConnectTimeout=10 conoha-vps "echo test"`
+4. 詳細デバッグ: `ssh -v conoha-vps`
 
 ### ポート競合
 1. 使用中プロセス確認: `ss -tlnp | grep :[port]`
@@ -151,6 +166,90 @@ git log --oneline -5
 
 ---
 
-**最終更新**: 2025年8月13日  
-**管理者**: Claude Code Assistant  
+## 📊 監視システム状況
+
+### Phase 3: 監視・通知システム ✅ 完了
+- **GitHub Actions**: 5分間隔自動監視
+- **VPS cron**: 5分間隔ローカル監視  
+- **ヘルスチェックAPI**: 3つのエンドポイント稼働
+- **運用ガイド**: `docs/CI_CD/監視システム運用ガイド.md`
+
+### 重要URL
+- **メインサイト**: https://uchinokiroku.com
+- **ヘルスチェック**: https://uchinokiroku.com/api/health
+- **DB監視**: https://uchinokiroku.com/api/health/db
+- **認証監視**: https://uchinokiroku.com/api/health/auth
+
+### 監視コマンド
+```bash
+# 手動ヘルスチェック
+ssh conoha-vps "/var/www/uchi/scripts/health-check.sh --verbose"
+
+# 監視ログ確認
+ssh conoha-vps "tail -20 /var/log/uchi-health.log"
+
+# アラート確認
+ssh conoha-vps "tail -10 /tmp/uchi-alerts.log"
+```
+
+---
+
+## 📋 現在の開発状況
+
+### 完了項目 ✅
+- [x] 独自ドメイン設定 (uchinokiroku.com)
+- [x] VPS本番環境構築
+- [x] Phase 3: 監視・通知システム実装
+- [x] ヘルスチェックAPI (3エンドポイント)
+- [x] GitHub Actions CI/CD
+- [x] SSH接続情報永続化 (この CLAUDE.md更新)
+
+### 進行中 🔄
+- [ ] 環境クリーンアップ自動化
+- [ ] SSH接続最適化
+
+### 次期予定 📋
+- [ ] 簡易POST機能実装
+- [ ] カテゴリ→タグ統合
+- [ ] レスポンシブUI改善
+- [ ] 検索機能実装
+
+---
+
+## 🎯 重要リンク
+
+### プロジェクト管理 (⭐ 最重要)
+- **📋 統合管理マスター**: `docs/PROJECT_MANAGEMENT.md` - **必読**
+  - 全TODO/ISSUE/機能の一元管理
+  - 優先度別の進捗ダッシュボード  
+  - 今週・来週の目標設定
+- **📝 移行記録**: `docs/MIGRATION_LOG.md`
+- **📊 監視ガイド**: `docs/CI_CD/監視システム運用ガイド.md`
+
+### GitHub
+- **リポジトリ**: https://github.com/masa162/uchi
+- **Actions**: 監視ワークフロー稼働中
+
+---
+
+## 🤖 Claude Code 使用時の重要事項
+
+### 毎セッション開始時の必須チェック
+1. **このCLAUDE.mdを最初に確認**
+2. **📋 PROJECT_MANAGEMENT.md確認** - 今日の最高/高優先度項目
+3. **SSH接続テスト**: `ssh conoha-vps "echo 'SSH接続成功'"`  
+4. **アプリケーション状態確認**: `curl -I https://uchinokiroku.com/`
+
+### 作業終了時の必須事項
+1. 変更内容のコミット・プッシュ
+2. VPS状態の確認
+3. 問題発生時のログ記録
+4. 次回作業メモの更新
+
+---
+
+**最終更新**: 2025年8月13日 15:55  
+**管理者**: Claude Code Assistant + 中山雅之  
 **重要度**: 🔥 必読・常時参照
+
+**🎯 目標**: SSH接続30秒以内、効率的で安定した開発環境の維持**
