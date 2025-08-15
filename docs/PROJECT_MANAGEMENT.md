@@ -19,11 +19,11 @@
 | F002 | 機能 | 🔴高 | ✅完了 | 本番環境スマホUI/UX確認 | 8/13 | Claude | 4h | mobile-ui-test |
 | F003 | 機能 | 🔴高 | ✅完了 | 記事追加ページ調整 | 8/15 | Claude | 6h | article-creation |
 | F004 | 機能 | 🔴高 | ✅完了 | カテゴリ→タグ統合 | 8/15 | Claude | 6h | TagSelector実装 |
+| P001 | プロセス | 🔥最高 | ✅完了 | エラー・後回し管理ワークフロー確立 | 8/15 | Claude | 2h | CLAUDE.md更新完了 |
 | **🔴 高優先度** | | | | | | | | |
-| B001 | バグ | 🔴高 | 📋待機 | TypeScript未使用変数警告解決 | 1週間 | Claude | 4h | 14ファイル修正 |
-| B002 | バグ | 🔴高 | 📋待機 | React Hooks依存関係警告解決 | 1週間 | Claude | 3h | useEffect修正 |
-| B003 | バグ | 🟡中 | 📋待機 | next/Image最適化警告解決 | 2週間 | Claude | 6h | imgタグ→Image変換 |
-| P001 | プロセス | 🔥最高 | 📋待機 | エラー・後回し管理ワークフロー確立 | 当日 | Claude | 2h | CLAUDE.md更新 |
+| B001 | バグ | 🔴高 | 📋待機 | TypeScript未使用変数警告解決(32件) | 1週間 | Claude | 4h | @typescript-eslint/no-unused-vars |
+| B002 | バグ | 🔴高 | 📋待機 | React Hooks依存関係警告解決 | 1週間 | Claude | 3h | react-hooks/exhaustive-deps |
+| B003 | バグ | 🟡中 | 📋待機 | next/Image最適化警告解決 | 2週間 | Claude | 6h | @next/next/no-img-element |
 | **🟡 中優先度** | | | | | | | | |
 | F005 | 機能 | 🟡中 | 📋待機 | ページ構成整理（月別・タグ） | 1ヶ月 | Claude | 8h | page-structure |
 | F006 | 機能 | 🟡中 | 📋待機 | 記事編集画面作成 | 1ヶ月 | Claude | 6h | article-editor |
@@ -157,6 +157,54 @@ docs/
 - [ ] モバイルUI満足度: 8/10以上
 - [ ] 機能使いやすさ: 8/10以上
 - [ ] レスポンス時間: 3秒以内
+
+---
+
+## 🔧 TypeScript警告解決計画
+
+### 📊 現状分析 (2025年8月15日)
+- **総警告数**: 32件
+- **主要カテゴリ**: 
+  - `@typescript-eslint/no-unused-vars`: 21件 (66%)
+  - `react-hooks/exhaustive-deps`: 5件 (16%)
+  - `@next/next/no-img-element`: 6件 (18%)
+
+### 🎯 段階的解決ロードマップ
+
+#### フェーズ1: 未使用変数一括削除 (B001) - 優先度🔴高
+**期間**: 2-3日  
+**対象**: `@typescript-eslint/no-unused-vars` 21件
+**戦略**: 
+- 未使用import削除 (安全な修正)
+- 未使用変数の用途確認後削除
+- error変数 → 適切なエラーハンドリングに変更
+
+#### フェーズ2: React Hooks依存関係修正 (B002) - 優先度🔴高  
+**期間**: 1-2日  
+**対象**: `react-hooks/exhaustive-deps` 5件
+**戦略**:
+- useEffect依存配列の適切な設定
+- useCallback/useMemoの依存関係最適化
+- 不要な再レンダリング防止
+
+#### フェーズ3: Image最適化 (B003) - 優先度🟡中
+**期間**: 1週間  
+**対象**: `@next/next/no-img-element` 6件
+**戦略**:
+- `<img>` → `<Image>`コンポーネント変換
+- 画像最適化設定の追加
+- パフォーマンス測定・検証
+
+### 📈 進捗追跡
+- [ ] フェーズ1開始: 警告32件 → 目標11件
+- [ ] フェーズ2開始: 警告11件 → 目標6件  
+- [ ] フェーズ3開始: 警告6件 → 目標0件
+- [ ] **🎖️ 警告ゼロ達成**
+
+### 🚫 解決時の禁止事項
+- ESLint disable コメントによる警告隠し
+- 一時的な応急処置での対応
+- テスト不十分なままの修正適用
 
 ---
 
