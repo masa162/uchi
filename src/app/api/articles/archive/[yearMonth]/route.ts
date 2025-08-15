@@ -43,7 +43,6 @@ export async function GET(
         slug: true,
         content: true,
         tags: true,
-        category: true,
         createdAt: true,
         updatedAt: true,
         author: {

@@ -49,7 +49,6 @@ export async function GET(request: NextRequest) {
         slug: true,
         content: true,
         tags: true,
-        category: true,
         createdAt: true,
         author: {
           select: {
