@@ -1,2 +1,3 @@
 timestamp,action,file_path,task_id,size_bytes,checksum
 2025-08-15 16:43:37,modify,"src/app/api/articles/category/[category]/route.ts",,954,f815c23c5045aa74c7eeecf14de8df64
+2025-08-15 16:48:33,modify,"src/app/api/articles/simple/route.ts",,3782,a217319a423df195b5d910b87519ef44

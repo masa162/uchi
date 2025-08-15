@@ -7,7 +7,6 @@ interface DraftData {
   title: string
   content: string
   description: string
-  category: string
   tags: string[]
   heroImageUrl: string | null
 }
@@ -42,7 +41,6 @@ export async function POST(req: NextRequest) {
       title: draftData.title?.trim() || '',
       content: draftData.content?.trim() || '',
       description: draftData.description?.trim() || '',
-      category: draftData.category || '',
       tags: Array.isArray(draftData.tags) ? draftData.tags : [],
       heroImageUrl: draftData.heroImageUrl?.trim() || null,
       savedAt: new Date().toISOString(),

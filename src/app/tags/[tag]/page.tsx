@@ -10,7 +10,6 @@ interface Article {
   slug: string
   description?: string
   pubDate: string
-  category?: string
   tags: string[]
   heroImageUrl?: string
   author: {

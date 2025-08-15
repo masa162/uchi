@@ -36,7 +36,6 @@ export interface Database {
           author_id: string
           hero_image_url: string | null
           tags: string[] | null
-          category: string | null
           is_published: boolean
         }
         Insert: {
@@ -50,7 +49,6 @@ export interface Database {
           author_id: string
           hero_image_url?: string | null
           tags?: string[] | null
-          category?: string | null
           is_published?: boolean
         }
         Update: {
@@ -64,7 +62,6 @@ export interface Database {
           author_id?: string
           hero_image_url?: string | null
           tags?: string[] | null
-          category?: string | null
           is_published?: boolean
         }
       }

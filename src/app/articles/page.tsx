@@ -12,7 +12,6 @@ interface Article {
   description?: string
   content: string
   pubDate: string
-  category?: string
   tags: string[]
   heroImageUrl?: string
   author: {
@@ -167,12 +166,6 @@ export default function ArticlesPage() {
                             {formatDate(article.pubDate)}
                           </span>
                         </div>
-                        
-                        {article.category && (
-                          <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">
-                            {article.category}
-                          </span>
-                        )}
                         
                         {article.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mb-3">

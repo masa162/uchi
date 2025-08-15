@@ -11,7 +11,6 @@ interface Article {
   slug: string
   content: string
   tags: string[]
-  category: string
   createdAt: string
   author: {
     name: string
@@ -137,9 +136,6 @@ function SearchPageContent() {
 
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <div className="flex items-center space-x-4">
-                        <span className="bg-gray-100 px-2 py-1 rounded text-xs">
-                          {article.category}
-                        </span>
                         <span>
                           {new Date(article.createdAt).toLocaleDateString('ja-JP')}
                         </span>

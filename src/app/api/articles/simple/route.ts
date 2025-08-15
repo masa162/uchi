@@ -93,7 +93,6 @@ export async function POST(request: NextRequest) {
         slug,
         content: content.trim(),
         description: autoDescription,
-        category: null, // 簡易POSTではカテゴリなし
         tags: [], // 簡易POSTではタグなし
         heroImageUrl: null, // 簡易POSTでは画像なし
         pubDate: new Date(),

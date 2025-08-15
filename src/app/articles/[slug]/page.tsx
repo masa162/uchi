@@ -17,7 +17,6 @@ interface Article {
   description?: string
   content: string
   pubDate: string
-  category?: string
   tags: string[]
   heroImageUrl?: string
   author: {
@@ -261,11 +260,6 @@ export default function ArticlePage({ params }: { params: Promise<{ slug:string 
                   )}
                   
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {article.category && (
-                      <Link href={`/categories/${article.category}`} className="inline-block bg-indigo-100 text-indigo-800 text-sm px-3 py-1 rounded-full hover:bg-indigo-200 transition-colors">
-                        📁 {article.category}
-                      </Link>
-                    )}
                     {article.tags.map((tag, index) => (
                       <Link href={`/tags/${tag}`} key={index} className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full hover:bg-gray-200 transition-colors">
                         #{tag}

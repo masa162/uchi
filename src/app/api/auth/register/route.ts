@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 既存ユーザーチェック
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findFirst({
       where: { email }
     })
 

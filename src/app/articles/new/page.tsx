@@ -38,7 +38,7 @@ export default function NewArticlePage() {
     }, 2000) // 2秒後に保存
 
     return () => clearTimeout(timer)
-  }, [title, content, description, selectedTags, heroImageUrl, saveDraft])
+  }, [title, content, description, selectedTags, heroImageUrl]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUsedTags = async () => {
     try {
