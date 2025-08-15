@@ -4,37 +4,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import MarkdownPreview from '@/components/MarkdownPreview'
+import TagSelector from '@/components/TagSelector'
 
-// 定義済みカテゴリ
-const CATEGORIES = [
-  { value: '', label: 'カテゴリを選択してください' },
-  { value: '家族', label: '👨‍👩‍👧‍👦 家族' },
-  { value: '旅行', label: '✈️ 旅行' },
-  { value: '料理', label: '🍳 料理' },
-  { value: '子育て', label: '👶 子育て' },
-  { value: 'イベント', label: '🎉 イベント' },
-  { value: '日記', label: '📝 日記' },
-  { value: '健康', label: '💪 健康' },
-  { value: '趣味', label: '🎨 趣味' },
-  { value: 'その他', label: '📂 その他' }
-]
-
-// よく使用されるタグのサジェスト
-const SUGGESTED_TAGS = [
-  '家族', '思い出', '成長', '記念日', 'お祝い', '誕生日',
-  '夏休み', '春', '夏', '秋', '冬', '週末', 
-  'おでかけ', '散歩', '公園', '海', '山', 'キャンプ',
-  'お料理', 'おやつ', '手作り', 'レシピ', '美味しい',
-  '学校', '習い事', 'スポーツ', '読書', 'ゲーム',
-  '感謝', '嬉しい', '楽しい', 'がんばり', '初めて'
-]
 
 export default function NewArticlePage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('')
-  const [tags, setTags] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [usedTags, setUsedTags] = useState<string[]>([])
   const [heroImageUrl, setHeroImageUrl] = useState('')
@@ -62,7 +38,7 @@ export default function NewArticlePage() {
     }, 2000) // 2秒後に保存
 
     return () => clearTimeout(timer)
-  }, [title, content, description, category, tags, heroImageUrl]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [title, content, description, selectedTags, heroImageUrl]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUsedTags = async () => {
     try {
@@ -86,8 +62,7 @@ export default function NewArticlePage() {
         title,
         content,
         description,
-        category,
-        tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        tags: selectedTags,
         heroImageUrl: heroImageUrl || null
       }
 
@@ -114,9 +89,6 @@ export default function NewArticlePage() {
         setTitle(draft.title || '')
         setContent(draft.content || '')
         setDescription(draft.description || '')
-        setCategory(draft.category || '')
-        const draftTags = Array.isArray(draft.tags) ? draft.tags.join(', ') : ''
-        setTags(draftTags)
         setSelectedTags(Array.isArray(draft.tags) ? draft.tags : [])
         setHeroImageUrl(draft.heroImageUrl || '')
         
@@ -135,28 +107,6 @@ export default function NewArticlePage() {
     setLastSaved(null)
   }
 
-  // タグをクリックで追加
-  const addTag = (tag: string) => {
-    if (!selectedTags.includes(tag)) {
-      const newTags = [...selectedTags, tag]
-      setSelectedTags(newTags)
-      setTags(newTags.join(', '))
-    }
-  }
-
-  // タグを削除
-  const removeTag = (tagToRemove: string) => {
-    const newTags = selectedTags.filter(tag => tag !== tagToRemove)
-    setSelectedTags(newTags)
-    setTags(newTags.join(', '))
-  }
-
-  // タグ入力を手動で変更した場合
-  const handleTagsChange = (value: string) => {
-    setTags(value)
-    const tagsArray = value.split(',').map(tag => tag.trim()).filter(Boolean)
-    setSelectedTags(tagsArray)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -175,8 +125,7 @@ export default function NewArticlePage() {
           title,
           content,
           description,
-          category,
-          tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+          tags: selectedTags,
           heroImageUrl: heroImageUrl || null,
         }),
       })
@@ -319,99 +268,12 @@ export default function NewArticlePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                  カテゴリ
-                </label>
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="block w-full px-4 py-3 sm:py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-base touch-manipulation"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-                  タグ
-                </label>
-                <input
-                  type="text"
-                  id="tags"
-                  value={tags}
-                  onChange={(e) => handleTagsChange(e.target.value)}
-                  className="block w-full px-4 py-3 sm:py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base touch-manipulation"
-                  placeholder="カンマ区切り例：家族,思い出,2025"
-                />
-                  
-                  {/* 選択されたタグを表示 */}
-                  {selectedTags.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedTags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800"
-                        >
-                          #{tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-1 text-indigo-600 hover:text-indigo-800"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                {/* タグサジェスト - モバイル最適化 */}
-                <div className="mt-3">
-                  <p className="text-xs text-gray-500 mb-2">💡 おすすめタグ（タップで追加）</p>
-                  <div className="flex flex-wrap gap-2">
-                    {/* 過去に使用したタグを優先表示 */}
-                    {usedTags.slice(0, 6).map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => addTag(tag)}
-                        className={`px-3 py-2 text-sm rounded-full transition-colors touch-manipulation min-h-[36px] ${
-                          selectedTags.includes(tag)
-                            ? 'bg-blue-100 text-blue-800 cursor-not-allowed opacity-50'
-                            : 'bg-green-100 text-green-800 hover:bg-green-200 active:bg-green-300'
-                        }`}
-                        disabled={selectedTags.includes(tag)}
-                      >
-                        #{tag}
-                      </button>
-                    ))}
-                    {/* サジェストタグ */}
-                    {SUGGESTED_TAGS.filter(tag => !usedTags.includes(tag)).slice(0, 10).map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => addTag(tag)}
-                        className={`px-3 py-2 text-sm rounded-full transition-colors touch-manipulation min-h-[36px] ${
-                          selectedTags.includes(tag)
-                            ? 'bg-blue-100 text-blue-800 cursor-not-allowed opacity-50'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                        }`}
-                        disabled={selectedTags.includes(tag)}
-                      >
-                        #{tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* 統合タグセレクター */}
+            <TagSelector
+              selectedTags={selectedTags}
+              onTagsChange={setSelectedTags}
+              usedTags={usedTags}
+            />
 
             <div>
               <label htmlFor="heroImageUrl" className="block text-sm font-medium text-gray-700 mb-2">

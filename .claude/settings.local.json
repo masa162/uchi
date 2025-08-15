@@ -16,7 +16,18 @@
       "Bash(git --version)",
       "Bash(npx prisma migrate:*)",
       "Bash(npx prisma:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"WORKFLOW_IMPROVEMENT\" \"completed\" \"作業記録システム改善提案完成\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\session-recovery.sh\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"WORKFLOW_ADOPTION\" \"completed\" \"新ワークフロー採用・運用開始決定\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"in_progress\" \"カテゴリ→タグ統合作業開始\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"現在のカテゴリシステム分析完了\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"タグ統合設計案策定完了\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"データベースマイグレーション計画完了\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"in_progress\" \"UIコンポーネント更新着手・TagSelector作成完了\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"UIコンポーネント更新・TagSelector統合完了\")",
+      "Bash(taskkill:*)",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"データ移行実行完了・統合テスト着手\")"
     ],
     "deny": [],
     "ask": []

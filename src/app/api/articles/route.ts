@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { title, content, description, category, tags, heroImageUrl } = await request.json()
+    const { title, content, description, tags, heroImageUrl } = await request.json()
 
     // バリデーション
     if (!title?.trim() || !content?.trim()) {
@@ -72,7 +72,6 @@ export async function POST(request: NextRequest) {
         slug,
         content: content.trim(),
         description: description?.trim() || null,
-        category: category?.trim() || null,
         tags: Array.isArray(tags) ? tags : [],
         heroImageUrl: heroImageUrl?.trim() || null,
         pubDate: new Date(),
@@ -106,13 +105,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
-    const category = searchParams.get('category')
+    const tag = searchParams.get('tag')
     
     const skip = (page - 1) * limit
 
     const where = {
       isPublished: true,
-      ...(category && { category })
+      ...(tag && { tags: { has: tag } })
     }
 
     const [articles, total] = await Promise.all([

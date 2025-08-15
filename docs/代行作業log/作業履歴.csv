@@ -18,3 +18,18 @@
 2025-08-13 10:38,Claude Code,ダークモード対応・視認性改善,src/components/PasswordGate.tsx・tailwind.config.ts,VPS,CSS修正・Tailwind設定,Safari・macOSダークモード視認性向上,完了,入力フィールド・テキストのコントラスト改善
 2025-08-13 10:58,Claude Code,Phase 1 CI/CD基本設定完了,CI/CD自動化,ローカル・GitHub,GitHub Actions設定・プッシュ,CI/CD Phase1基本インフラ構築,完了,完了
 2025-08-13 11:02,Claude Code,Phase 2 CI/CD自動デプロイ設定完了,.github/workflows/deploy.yml・CI/CDドキュメント,ローカル・GitHub,GitHub Actions設定・ドキュメント作成,完全なCI/CDパイプライン構築,完了,完了
+2025-08-15 10:00,Claude Code,Windows開発環境セットアップ,Docker・npm・SSH,Windows,環境構築,F003準備作業,完了,Node.js・Docker・SSH鍵設定
+2025-08-15 11:00,Claude Code,F003問題点分析,src/app/articles/new/page.tsx,Windows,コード分析,記事追加ページ改善,完了,モバイルUI・プレビュー・下書き機能不足
+2025-08-15 12:30,Claude Code,モバイルUI最適化実装,src/app/articles/new/page.tsx,Windows,コード編集,ユーザビリティ向上,完了,touch-manipulation・レスポンシブ対応
+2025-08-15 13:30,Claude Code,Markdownプレビュー機能実装,src/components/MarkdownPreview.tsx,Windows,新規作成,記事作成体験向上,完了,リアルタイム・サイドバイサイド表示
+2025-08-15 14:30,Claude Code,自動下書き保存機能実装,src/app/api/articles/draft/route.ts,Windows,新規作成・編集,データ保護,完了,LocalStorage・2秒間隔自動保存
+2025-08-15 15:30,Claude Code,F003統合テスト・デプロイ,全体システム,Windows・VPS,テスト・デプロイ,本番環境反映,完了,TypeScript型チェック・git push・VPS更新
+2025-08-15 10:52,Claude Code,作業記録システム改善提案完成,WORKFLOW_IMPROVEMENT,Windows,TodoWrite自動更新,WORKFLOW_IMPROVEMENT実装,completed,自動記録
+2025-08-15 10:56,Claude Code,新ワークフロー採用・運用開始決定,WORKFLOW_ADOPTION,Windows,TodoWrite自動更新,WORKFLOW_ADOPTION実装,completed,自動記録
+2025-08-15 10:57,Claude Code,カテゴリ→タグ統合作業開始,F004,Windows,TodoWrite自動更新,F004実装,in_progress,自動記録
+2025-08-15 10:58,Claude Code,現在のカテゴリシステム分析完了,F004,Windows,TodoWrite自動更新,F004実装,completed,自動記録
+2025-08-15 10:59,Claude Code,タグ統合設計案策定完了,F004,Windows,TodoWrite自動更新,F004実装,completed,自動記録
+2025-08-15 11:00,Claude Code,データベースマイグレーション計画完了,F004,Windows,TodoWrite自動更新,F004実装,completed,自動記録
+2025-08-15 11:02,Claude Code,UIコンポーネント更新着手・TagSelector作成完了,F004,Windows,TodoWrite自動更新,F004実装,in_progress,自動記録
+2025-08-15 11:05,Claude Code,UIコンポーネント更新・TagSelector統合完了,F004,Windows,TodoWrite自動更新,F004実装,completed,自動記録
+2025-08-15 11:09,Claude Code,データ移行実行完了・統合テスト着手,F004,Windows,TodoWrite自動更新,F004実装,completed,自動記録
