@@ -37,7 +37,8 @@
       "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"VPS_502_FIX\" \"completed\" \"VPSトップページ502エラー修正完了・安定表示実現\")",
       "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"P002\" \"completed\" \"Claude Code重大欠陥改善・厳格ワークフロー確立完了\")",
       "WebFetch(domain:uchinokiroku.com)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"P006\" \"completed\" \"articles/new実エラー完全解決・代行ツール卒業・resort.md策定完了\")"
     ],
     "deny": [],
     "ask": []
