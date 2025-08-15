@@ -18,9 +18,9 @@
 | F001 | 機能 | 🔴高 | ✅完了 | 簡易POST機能実装 | 8/13 | Claude | 8h | simple-post-spec |
 | F002 | 機能 | 🔴高 | ✅完了 | 本番環境スマホUI/UX確認 | 8/13 | Claude | 4h | mobile-ui-test |
 | F003 | 機能 | 🔴高 | ✅完了 | 記事追加ページ調整 | 8/15 | Claude | 6h | article-creation |
+| F004 | 機能 | 🔴高 | ✅完了 | カテゴリ→タグ統合 | 8/15 | Claude | 6h | TagSelector実装 |
 | **🔴 高優先度** | | | | | | | | |
 | **🟡 中優先度** | | | | | | | | |
-| F004 | 機能 | 🟡中 | 📋待機 | カテゴリ→タグ統合 | 1ヶ月 | Claude | 6h | data-migration |
 | F005 | 機能 | 🟡中 | 📋待機 | ページ構成整理（月別・タグ） | 1ヶ月 | Claude | 8h | page-structure |
 | F006 | 機能 | 🟡中 | 📋待機 | 記事編集画面作成 | 1ヶ月 | Claude | 6h | article-editor |
 | F007 | 機能 | 🟡中 | 📋待機 | 基本検索機能実装 | 1ヶ月 | Claude | 8h | search-system |
