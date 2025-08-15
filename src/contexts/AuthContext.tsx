@@ -16,6 +16,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const loading = status === 'loading'
   const user = session?.user || null
+  
+  // P006対策: より詳細な認証状態追跡
+  const isReady = status !== 'loading'
 
   const signOut = async () => {
     await nextAuthSignOut()

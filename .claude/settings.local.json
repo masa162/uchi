@@ -33,7 +33,11 @@
       "Bash(./scripts/enhanced-log-system.sh start:*)",
       "Bash(./scripts/file-residue-cleaner.sh:*)",
       "Bash(./scripts/project-dashboard.sh:*)",
-      "Bash(./scripts/enhanced-log-system.sh:*)"
+      "Bash(./scripts/enhanced-log-system.sh:*)",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"VPS_502_FIX\" \"completed\" \"VPSトップページ502エラー修正完了・安定表示実現\")",
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"P002\" \"completed\" \"Claude Code重大欠陥改善・厳格ワークフロー確立完了\")",
+      "WebFetch(domain:uchinokiroku.com)",
+      "WebFetch(domain:localhost)"
     ],
     "deny": [],
     "ask": []

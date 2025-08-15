@@ -23,17 +23,33 @@ export default function NewArticlePage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
 
-  // 認証チェックとリダイレクト
+  // 認証チェックとリダイレクト（P006対策: 改善版）
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/auth/signin')
+    // 1. 認証確認中は何もしない
+    if (authLoading) {
       return
     }
     
-    if (user && !authLoading) {
-      fetchUsedTags()
-      loadDraft()
+    // 2. 未認証の場合は即座にリダイレクト
+    if (!user) {
+      router.replace('/auth/signin')
+      return
     }
+    
+    // 3. 認証確定後のみ初期化実行
+    const initializePage = async () => {
+      try {
+        await Promise.all([
+          fetchUsedTags(),
+          loadDraft()
+        ])
+      } catch (error) {
+        console.error('Page initialization failed:', error)
+        // フォールバック処理: エラーが発生してもページは使用可能にする
+      }
+    }
+    
+    initializePage()
   }, [user, authLoading, router])
 
   // 自動下書き保存（認証済みユーザーのみ）
@@ -50,20 +66,38 @@ export default function NewArticlePage() {
   }, [title, content, description, selectedTags, heroImageUrl, user, authLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUsedTags = async () => {
+    // P006対策: タイムアウト設定とエラーハンドリング強化
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5秒タイムアウト
+    
     try {
-      const response = await fetch('/api/articles/tags')
+      const response = await fetch('/api/articles/tags', {
+        signal: controller.signal
+      })
+      clearTimeout(timeoutId)
+      
       if (response.ok) {
         const data = await response.json()
         setUsedTags(data.tags || [])
       } else if (response.status === 401) {
         console.log('認証が必要です')
-        // 認証エラーの場合は再試行しない
+        // 認証エラーの場合は即座にサインインページへ
+        router.replace('/auth/signin')
         return
       } else {
         console.log('タグの取得に失敗しました:', response.status)
+        // フォールバック: 空のタグリストで継続
+        setUsedTags([])
       }
     } catch (error) {
-      console.log('タグの取得に失敗しました:', error)
+      clearTimeout(timeoutId)
+      if (error.name === 'AbortError') {
+        console.log('タグAPI呼び出しがタイムアウトしました')
+      } else {
+        console.log('タグの取得に失敗しました:', error)
+      }
+      // フォールバック: 空のタグリストで継続
+      setUsedTags([])
     }
   }
 
