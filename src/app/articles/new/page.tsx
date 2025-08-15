@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import MarkdownPreview from '@/components/MarkdownPreview'
@@ -38,7 +38,7 @@ export default function NewArticlePage() {
     }, 2000) // 2秒後に保存
 
     return () => clearTimeout(timer)
-  }, [title, content, description, selectedTags, heroImageUrl]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [title, content, description, selectedTags, heroImageUrl, saveDraft])
 
   const fetchUsedTags = async () => {
     try {
@@ -53,7 +53,7 @@ export default function NewArticlePage() {
   }
 
   // 下書き保存
-  const saveDraft = async () => {
+  const saveDraft = useCallback(async () => {
     if (draftSaving) return
     
     setDraftSaving(true)
@@ -78,7 +78,7 @@ export default function NewArticlePage() {
     } finally {
       setDraftSaving(false)
     }
-  }
+  }, [title, content, description, selectedTags, heroImageUrl, draftSaving])
 
   // 下書き読み込み
   const loadDraft = () => {
