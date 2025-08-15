@@ -50,7 +50,7 @@ jobs:
             git pull origin main
             
             echo "📦 Installing dependencies..."
-            npm ci --only=production
+            npm ci
             
             echo "🏗️ Building application..."
             npm run build
