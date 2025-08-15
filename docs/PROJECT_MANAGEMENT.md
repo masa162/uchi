@@ -26,6 +26,7 @@
 | B003 | バグ | 🟡中 | 📋待機 | next/Image最適化警告解決 | 2週間 | Claude | 6h | @next/next/no-img-element |
 | B004 | バグ | 🔥最高 | ✅完了 | VPS 502エラー再発防止・自動復旧システム | 8/15 | Claude | 3h | cron+systemd自動化 |
 | B005 | バグ | 🔥最高 | ✅完了 | VPS 502エラー根本原因分析・予防策確立 | 8/15 | Claude | 2h | 詳細分析・完全予防策確立 |
+| B006 | バグ | 🔴高 | ✅完了 | articles/new無限ローディング修正 | 8/15 | Claude | 1h | 認証状態チェック強化 |
 | **🟡 中優先度** | | | | | | | | |
 | F005 | 機能 | 🟡中 | 📋待機 | ページ構成整理（月別・タグ） | 1ヶ月 | Claude | 8h | page-structure |
 | F006 | 機能 | 🟡中 | 📋待機 | 記事編集画面作成 | 1ヶ月 | Claude | 6h | article-editor |
