@@ -86,9 +86,9 @@ export async function POST(
       return NextResponse.json({ error: 'Article not found' }, { status: 404 })
     }
 
-    // ユーザー情報を取得
+    // ユーザー情報を取得（セッションのsub=userIdを使用）
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email! }
+      where: { id: session.user.id }
     })
 
     if (!user) {

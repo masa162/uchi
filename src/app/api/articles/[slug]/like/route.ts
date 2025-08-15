@@ -37,9 +37,9 @@ export async function GET(
 
     // 現在のユーザーがいいねしているか確認
     let isLiked = false
-    if (session.user?.email) {
+    if (session.user?.id) {
       const user = await prisma.user.findUnique({
-        where: { email: session.user.email }
+        where: { id: session.user.id }
       })
 
       if (user) {
@@ -91,7 +91,7 @@ export async function POST(
 
     // ユーザー情報を取得
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email! }
+      where: { id: session.user.id }
     })
 
     if (!user) {
