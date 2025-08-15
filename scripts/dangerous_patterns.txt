@@ -1,0 +1,36 @@
+# 危険な削除パターン（特別な注意が必要）
+# これらのパターンは deep-clean でのみ処理し、必ず確認を求める
+
+# 重要な本番ファイル
+/var/www/
+/etc/
+/opt/
+/usr/local/
+/home/
+/root/
+
+# システムディレクトリ
+/bin/
+/sbin/
+/lib/
+/lib64/
+/boot/
+
+# データベース
+*.sql
+*.db
+*.sqlite
+
+# 設定ファイル
+*.conf
+*.config
+*.ini
+*.yaml
+*.yml
+
+# 証明書・セキュリティ
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx

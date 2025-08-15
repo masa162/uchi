@@ -29,7 +29,11 @@
       "Bash(taskkill:*)",
       "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"データ移行実行完了・統合テスト着手\")",
       "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"MORNING_REPORT\" \"completed\" \"午前作業報告書作成完了\")",
-      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"LINE認証email制約エラー修正完了・本番環境復旧\")"
+      "Bash(\"D:\\github\\uchi\\scripts\\auto-log-update.sh\" \"F004\" \"completed\" \"LINE認証email制約エラー修正完了・本番環境復旧\")",
+      "Bash(./scripts/enhanced-log-system.sh start:*)",
+      "Bash(./scripts/file-residue-cleaner.sh:*)",
+      "Bash(./scripts/project-dashboard.sh:*)",
+      "Bash(./scripts/enhanced-log-system.sh:*)"
     ],
     "deny": [],
     "ask": []

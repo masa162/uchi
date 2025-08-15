@@ -1,0 +1,55 @@
+# ファイル残渣クリーンアップ ホワイトリスト
+# 絶対に削除してはいけないファイル・パターン
+
+# 設定ファイル
+*.env
+*.env.local
+*.env.production
+.env.*
+CLAUDE.md
+README.md
+package.json
+package-lock.json
+tsconfig.json
+next.config.js
+tailwind.config.*
+.gitignore
+.gitattributes
+
+# 重要なディレクトリ
+.git/
+.github/
+node_modules/
+prisma/
+src/
+docs/
+scripts/
+
+# データベース関連
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+prisma/migrations/
+
+# 証明書・鍵
+*.pem
+*.key
+*.crt
+*.cert
+*key*
+*secret*
+*password*
+
+# バックアップファイル（重要）
+backup_*
+*.backup
+*.bak
+
+# ログファイル（重要な情報が含まれる可能性）
+*.log
+
+# IDE設定（個人設定保護）
+.vscode/
+.idea/
+*.code-workspace
