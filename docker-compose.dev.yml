@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Development
+  postgres:
+    image: postgres:15
+    container_name: uchi-postgres-dev
+    environment:
+      POSTGRES_DB: uchinokiroku
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d uchinokiroku"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis for Development (Optional - for future caching)
+  redis:
+    image: redis:7-alpine
+    container_name: uchi-redis-dev
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+    driver: local

@@ -6,20 +6,33 @@
 - **IPアドレス**: `160.251.136.92`
 - **ユーザー**: `root`
 - **SSH設定名**: `conoha-vps`
-- **SSH鍵**: `/Users/nakayamamasayuki/.ssh/id_ed25519_sinvps_macbook`
-- **接続コマンド**: 
-  ```bash
-  ssh conoha-vps
-  ```
 
-### SSH設定ファイル
-**場所**: `/Users/nakayamamasayuki/.ssh/config`
+### 🖥️ 環境別SSH設定
+
+#### Mac環境
+- **SSH鍵**: `/Users/nakayamamasayuki/.ssh/id_ed25519_sinvps_macbook`
+- **設定ファイル**: `/Users/nakayamamasayuki/.ssh/config`
+
+#### Windows環境
+- **SSH鍵**: `D:\github\uchi\docs\関連資料\conohaVPS\[鍵ファイル名]`
+- **設定ファイル**: `~/.ssh/config` (WSL) または `%USERPROFILE%\.ssh\config`
+
+### SSH設定ファイル (共通)
 ```bash
 Host conoha-vps
   HostName 160.251.136.92
   User root
-  IdentityFile ~/.ssh/id_ed25519_sinvps_macbook
+  IdentityFile [環境に応じてパス調整]
   IdentitiesOnly yes
+```
+
+### 🔧 接続コマンド
+```bash
+# 直接接続（環境問わず）
+ssh root@160.251.136.92 -i [鍵ファイルパス]
+
+# 設定済み接続
+ssh conoha-vps
 ```
 
 ### VPS基本情報
@@ -39,11 +52,19 @@ Host conoha-vps
 - **データベース**: PostgreSQL (ポート5432)
 - **SSL**: Let's Encrypt自動更新
 
-### ローカル開発環境
+### 🖥️ ローカル開発環境 (環境別)
+
+#### Mac環境
 - **プロジェクトパス**: `/Users/nakayamamasayuki/Documents/GitHub/uchi`
-- **Node.js**: v18+
+
+#### Windows環境  
+- **プロジェクトパス**: `D:\github\uchi`
+
+#### 共通設定
+- **Node.js**: v18+ (現在: v22.18.0)
 - **Next.js**: v15.4.5
 - **開発サーバー**: `npm run dev` (ポート3000)
+- **環境変数**: `.env.local` (各環境で作成)
 
 ---
 
