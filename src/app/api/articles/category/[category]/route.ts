@@ -10,7 +10,9 @@ export async function GET(
     const category = decodeURIComponent(categoryParam)
     const articles = await prisma.article.findMany({
       where: {
-        category: category,
+        tags: {
+          has: category
+        },
         isPublished: true,
       },
       orderBy: {
