@@ -20,17 +20,26 @@ export default function NewArticlePage() {
   const [draftSaving, setDraftSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
 
-  // 過去に使用されたタグを取得と下書き読み込み
+  // 認証チェックとリダイレクト
   useEffect(() => {
-    fetchUsedTags()
-    loadDraft()
-  }, [])
+    if (!authLoading && !user) {
+      router.push('/auth/signin')
+      return
+    }
+    
+    if (user && !authLoading) {
+      fetchUsedTags()
+      loadDraft()
+    }
+  }, [user, authLoading, router])
 
-  // 自動下書き保存
+  // 自動下書き保存（認証済みユーザーのみ）
   useEffect(() => {
+    if (!user || authLoading) return
+    
     const timer = setTimeout(() => {
       if (title.trim() || content.trim()) {
         saveDraft()
@@ -38,7 +47,7 @@ export default function NewArticlePage() {
     }, 2000) // 2秒後に保存
 
     return () => clearTimeout(timer)
-  }, [title, content, description, selectedTags, heroImageUrl]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [title, content, description, selectedTags, heroImageUrl, user, authLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUsedTags = async () => {
     try {
@@ -46,9 +55,15 @@ export default function NewArticlePage() {
       if (response.ok) {
         const data = await response.json()
         setUsedTags(data.tags || [])
+      } else if (response.status === 401) {
+        console.log('認証が必要です')
+        // 認証エラーの場合は再試行しない
+        return
+      } else {
+        console.log('タグの取得に失敗しました:', response.status)
       }
     } catch (error) {
-      console.log('タグの取得に失敗しました')
+      console.log('タグの取得に失敗しました:', error)
     }
   }
 
@@ -148,10 +163,31 @@ export default function NewArticlePage() {
     }
   }
 
+  // 認証ローディング中
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // 未認証ユーザー
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>ログインが必要です</p>
+        <div className="text-center">
+          <p className="mb-4">ログインが必要です</p>
+          <button 
+            onClick={() => router.push('/auth/signin')}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            ログインページへ
+          </button>
+        </div>
       </div>
     )
   }
