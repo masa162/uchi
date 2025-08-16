@@ -37,6 +37,7 @@ export default function TagArticlePage({ params }: { params: Promise<{ tag: stri
         setError('記事の取得に失敗しました')
       }
     } catch (error) {
+      console.error(`タグ「${tag}」の記事取得中にエラーが発生しました:`, error);
       setError('エラーが発生しました')
     } finally {
       setLoading(false)

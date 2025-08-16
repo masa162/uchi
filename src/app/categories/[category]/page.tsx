@@ -38,6 +38,7 @@ export default function CategoryArticlePage({ params }: { params: Promise<{ cate
         setError('記事の取得に失敗しました')
       }
     } catch (error) {
+      console.error(`カテゴリ「${category}」の記事取得中にエラーが発生しました:`, error);
       setError('エラーが発生しました')
     } finally {
       setLoading(false)

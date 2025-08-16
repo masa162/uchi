@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+
 import Link from 'next/link'
 
 export default function ForgotPasswordPage() {
@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error' | 'info' | ''>('')
-  const router = useRouter()
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +33,7 @@ export default function ForgotPasswordPage() {
         setEmail('')
       }
     } catch (error) {
+      console.error('パスワードリセットリクエスト中にエラーが発生しました:', error);
       setMessage('すみません、何かうまくいかなかったようです。しばらく待ってからもう一度お試しください 🙏')
       setMessageType('error')
     } finally {

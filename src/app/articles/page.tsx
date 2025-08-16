@@ -47,6 +47,7 @@ export default function ArticlesPage() {
         setError('記事の取得に失敗しました')
       }
     } catch (error) {
+      console.error('記事一覧の取得中にエラーが発生しました:', error);
       setError('エラーが発生しました')
     } finally {
       setLoading(false)

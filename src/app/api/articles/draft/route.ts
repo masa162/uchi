@@ -1,5 +1,6 @@
+import type { Session } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
 // 下書きデータの型定義
@@ -16,7 +17,7 @@ const DRAFT_STORAGE_KEY = 'article_draft'
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions) as Session | null
     
     if (!session?.user) {
       return NextResponse.json(
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions) as Session | null
     
     if (!session?.user) {
       return NextResponse.json(
@@ -93,7 +94,7 @@ export async function GET() {
 
 export async function DELETE() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions) as Session | null
     
     if (!session?.user) {
       return NextResponse.json(

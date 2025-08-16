@@ -20,7 +20,7 @@ export default function Sidebar() {
         setTags(data.tags || [])
       }
     } catch (error) {
-      console.log('タグの取得に失敗しました')
+      console.error('タグの取得に失敗しました:', error)
     }
   }
 

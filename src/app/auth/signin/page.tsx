@@ -59,6 +59,7 @@ function SignInForm() {
         setMessageType('error')
       }
     } catch (error) {
+      console.error('Email sign-in error:', error);
       setMessage('何かうまくいかなかったようです。しばらく待ってからお試しください 😅')
       setMessageType('error')
     } finally {
@@ -71,6 +72,7 @@ function SignInForm() {
     try {
       await signIn('google', { callbackUrl: '/' })
     } catch (error) {
+      console.error('Google sign-in error:', error);
       setMessage('Googleログインがうまくいきませんでした。もう一度お試しください 😊')
       setMessageType('error')
       setIsLoading(false)
@@ -82,6 +84,7 @@ function SignInForm() {
     try {
       await signIn('line', { callbackUrl: '/' })
     } catch (error) {
+      console.error('LINE sign-in error:', error);
       setMessage('LINEログインがうまくいきませんでした。もう一度お試しください 😊')
       setMessageType('error')
       setIsLoading(false)

@@ -13,6 +13,17 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@next/font']
   },
   
+  // P008対策: NextAuth.js v4 + Next.js 15互換性設定
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = config.externals || []
+      config.externals.push({
+        'next-auth': 'next-auth'
+      })
+    }
+    return config
+  },
+  
 };
 
 export default nextConfig;

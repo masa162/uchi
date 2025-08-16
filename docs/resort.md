@@ -273,3 +273,66 @@ curl -f https://uchinokiroku.com/articles/new || alert "記事投稿ページエ
 **最終更新**: 2025年8月15日 22:30  
 **責任者**: Claude Code (代行ツール卒業済み)  
 **プロジェクト**: うちのきろく - かけがえのない家族のアーカイブサイト
+
+---
+
+## 📚 プロジェクト知見集（旧Project Charterより移行）
+**最終更新**: 2025年8月16日
+
+このセクションは、プロジェクトで発生した問題とその解決策、そして得られた教訓を記録する中央リポジトリです。
+
+### 🔥 重大事件からの教訓
+**B005 VPS 502エラー事件 (2025年8月15日)**
+- **問題**: VPS本番ビルド実行忘れによる24分間完全ダウンタイム
+- **根本原因**: `npm run build` コマンド1回の実行忘れ
+- **教訓**: 小さなミスでも家族の記録が完全アクセス不可になる
+- **対策**: VPS作業時の絶対チェックリスト厳守
+
+**P004 Claude Code重大欠陥 (2025年8月15日)**
+- **問題**: 表面的エラー修正、根本分析の回避、予見能力の欠如
+- **教訓**: 短絡的修正は翌日には同種エラーを再発させる
+- **対策**: 問題記録前の修正禁止、5項目根本原因分析必須
+
+**P007 VPS 502エラー第3弾・情報資産化未完了 (2025年8月16日)**
+- **問題**: node_modules破損+TypeScriptエラー、知見記録せずセッション終了試行
+- **根本原因**: VPS長期放置リスク軽視、情報資産化への意識欠如
+- **教訓**: エラー解決だけでは不十分、知見の体系化が真の価値
+- **対策**: 情報資産化完了までセッション終了絶対禁止ルール確立
+
+**P008 LINEログイン認証エラー500・技術債務問題 (2025年8月16日) - ✅ 完全解決**
+- **問題**: Next.js 15 + NextAuth.js v4互換性問題によるOAuth認証機能停止
+- **根本原因**: フレームワーク更新時の互換性検証不足、技術債務の蓄積
+- **解決手法**: AuthConfigインターフェース独自実装、ESLint型抑制、ランタイム互換性確保
+- **教訓**: メジャーバージョンアップ時の慎重な検証と段階的移行の重要性
+- **対策**: 技術債務管理強化、互換性テスト自動化、NextAuth.js v5移行計画策定
+- **実装例**:
+```typescript
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface AuthConfig {
+  adapter: any
+  debug: boolean
+  providers: any[]
+  session: { strategy: 'jwt' | 'database' }
+  pages: { signIn: string; error: string }
+  callbacks: any
+}
+export const authOptions: AuthConfig = { /* 設定内容 */ }
+/* eslint-enable @typescript-eslint/no-explicit-any */
+```
+- **結果**: 認証システム完全復旧、ヘルスチェック正常化、VPSビルド成功
+
+### よくある問題と解決策
+**問題**: SSH接続タイムアウト  
+**解決策**: `ssh -o ConnectTimeout=10 conoha-vps "echo test"` で事前テスト
+
+**問題**: ポート3000競合  
+**解決策**: `pkill -f next` でプロセス停止後、3秒待機して再起動
+
+**問題**: 環境変数読み込み失敗  
+**解決策**: `./start-with-env.sh` スクリプト使用（手動 npm install 禁止）
+
+**問題**: VPS長期放置による環境劣化・node_modules破損  
+**解決策**: 定期VPS稼働監視、npm ci --omit=dev でクリーン復旧、ローカル.next転送技法
+
+**問題**: Next.js + NextAuth.js互換性問題によるOAuth認証エラー  
+**解決策**: カスタムエラーページ作成、Session型修正、段階的v5移行計画

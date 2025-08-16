@@ -21,7 +21,7 @@ interface Article {
 export default function ArchiveDetailPage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
-  const [yearMonth, setYearMonth] = useState('')
+  
   const [year, setYear] = useState(0)
   const [month, setMonth] = useState(0)
   const params = useParams()
@@ -39,7 +39,7 @@ export default function ArchiveDetailPage() {
       if (response.ok) {
         const data = await response.json()
         setArticles(data.articles || [])
-        setYearMonth(data.yearMonth)
+        
         setYear(data.year)
         setMonth(data.month)
       } else {

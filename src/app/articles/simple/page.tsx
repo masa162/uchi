@@ -47,7 +47,7 @@ export default function SimplePostPage() {
       })
 
       if (response.ok) {
-        const result = await response.json()
+        await response.json()
         setShowSuccess(true)
         setContent('') // 投稿後にクリア
         

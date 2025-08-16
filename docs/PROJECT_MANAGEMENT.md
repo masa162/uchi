@@ -1,6 +1,6 @@
 # うちのきろく - プロジェクト管理統合システム
 
-**最終更新**: 2025年8月15日  
+**最終更新**: 2025年8月16日  
 **管理方式**: 統合テーブル（CSV形式）+ 詳細ドキュメント
 
 ---
@@ -21,7 +21,7 @@
 | F004 | 機能 | 🔴高 | ✅完了 | カテゴリ→タグ統合 | 8/15 | Claude | 6h | TagSelector実装 |
 | P001 | プロセス | 🔥最高 | ✅完了 | エラー・後回し管理ワークフロー確立 | 8/15 | Claude | 2h | CLAUDE.md更新完了 |
 | **🔴 高優先度** | | | | | | | | |
-| B001 | バグ | 🔴高 | 📋待機 | TypeScript未使用変数警告解決(32件) | 1週間 | Claude | 4h | @typescript-eslint/no-unused-vars |
+| B001 | バグ | 🔴高 | ✅完了 | TypeScript未使用変数警告解決(32件) | 1週間 | Claude | 4h | @typescript-eslint/no-unused-vars |
 | B002 | バグ | 🔴高 | 📋待機 | React Hooks依存関係警告解決 | 1週間 | Claude | 3h | react-hooks/exhaustive-deps |
 | B003 | バグ | 🟡中 | 📋待機 | next/Image最適化警告解決 | 2週間 | Claude | 6h | @next/next/no-img-element |
 | B004 | バグ | 🔥最高 | ✅完了 | VPS 502エラー再発防止・自動復旧システム | 8/15 | Claude | 3h | cron+systemd自動化 |

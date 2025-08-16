@@ -23,6 +23,7 @@ export default function AuthTestPage() {
         [provider]: result.configured ? 'success' : 'error' 
       }))
     } catch (error) {
+      console.error(`Error testing provider ${provider}:`, error);
       setTestResults(prev => ({ ...prev, [provider]: 'error' }))
     }
   }
@@ -36,14 +37,7 @@ export default function AuthTestPage() {
     }
   }
 
-  const getStatusMessage = (status: 'success' | 'error' | 'pending' | undefined) => {
-    switch (status) {
-      case 'success': return '設定完了'
-      case 'error': return '設定が必要です'
-      case 'pending': return '確認中...'
-      default: return '未確認'
-    }
-  }
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4">

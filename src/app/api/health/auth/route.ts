@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../lib/auth'
 
 export async function GET() {
@@ -20,7 +20,7 @@ export async function GET() {
     // セッション機能テスト（エラーハンドリング付き）
     let sessionTest = false
     try {
-      const session = await getServerSession(authOptions)
+      await getServerSession(authOptions)
       sessionTest = true
     } catch (error) {
       console.error('Session test failed:', error)
@@ -37,7 +37,7 @@ export async function GET() {
         authConfig: hasAuthConfig,
         secrets: hasSecrets,
         sessionHandler: sessionTest,
-        providers: authOptions?.providers?.map(p => p.id) || []
+        providers: authOptions?.providers?.map((p: { id: string }) => p.id) || []
       }
     }
 

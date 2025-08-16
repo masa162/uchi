@@ -180,7 +180,7 @@ export default function NewArticlePage() {
       })
 
       if (response.ok) {
-        const _article = await response.json()
+        await response.json()
         clearDraft() // 投稿成功時に下書きを削除
         setMessage('記事を投稿しました！')
         setTimeout(() => {

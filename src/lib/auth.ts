@@ -1,4 +1,3 @@
-import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
@@ -7,20 +6,20 @@ import LineProvider from 'next-auth/providers/line'
 import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
 
-export const authOptions: NextAuthOptions = {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface AuthConfig {
+  adapter: any
+  debug: boolean
+  providers: any[]
+  session: { strategy: 'jwt' | 'database' }
+  pages: { signIn: string; error: string }
+  callbacks: any
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export const authOptions: AuthConfig = {
   adapter: PrismaAdapter(prisma),
-  debug: true,
-  logger: {
-    error(code, metadata) {
-      console.error('NextAuth Error:', code, metadata)
-    },
-    warn(code) {
-      console.warn('NextAuth Warning:', code)
-    },
-    debug(code, metadata) {
-      console.log('NextAuth Debug:', code, metadata)
-    }
-  },
+  debug: process.env.NODE_ENV === 'development',
   providers: [
     EmailProvider({
       server: {
@@ -45,9 +44,16 @@ export const authOptions: NextAuthOptions = {
           scope: "profile openid email"
         }
       },
+      // Next.js 15 + NextAuth.js v4互換性設定
+      checks: ["pkce", "state"],
       client: {
         id_token_signed_response_alg: "HS256"
-      }
+      },
+      // P008対策: LINEプロバイダー安定化設定
+      wellKnown: undefined,
+      issuer: "https://access.line.me",
+      token: "https://api.line.me/oauth2/v2.1/token",
+      userinfo: "https://api.line.me/v2/profile"
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -102,9 +108,11 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
+    error: '/auth/error',
   },
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   callbacks: {
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account, profile }: any) {
       if (user) {
         token.id = user.id
       }
@@ -116,13 +124,13 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token && session.user) {
         (session.user as { id?: string }).id = token.id as string
       }
       return session
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }: any) {
       if (account?.provider === 'line') {
         console.log('LINE SignIn - User:', user)
         console.log('LINE SignIn - Account:', account)
@@ -137,4 +145,5 @@ export const authOptions: NextAuthOptions = {
       return true
     }
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }

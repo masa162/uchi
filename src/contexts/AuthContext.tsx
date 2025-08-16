@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react'
 import { useSession, signOut as nextAuthSignOut } from 'next-auth/react'
-import { Session } from 'next-auth'
+import type { Session } from 'next-auth'
 
 interface AuthContextType {
   user: Session['user'] | null
@@ -17,8 +17,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loading = status === 'loading'
   const user = session?.user || null
   
-  // P006対策: より詳細な認証状態追跡
-  const isReady = status !== 'loading'
+  
 
   const signOut = async () => {
     await nextAuthSignOut()
