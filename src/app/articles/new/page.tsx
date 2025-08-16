@@ -91,7 +91,7 @@ export default function NewArticlePage() {
       }
     } catch (error) {
       clearTimeout(timeoutId)
-      if (error.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         console.log('タグAPI呼び出しがタイムアウトしました')
       } else {
         console.log('タグの取得に失敗しました:', error)
@@ -123,7 +123,7 @@ export default function NewArticlePage() {
 
       setLastSaved(new Date())
     } catch (error) {
-      console.log('下書き保存に失敗しました')
+      console.error('下書き保存に失敗しました:', error)
     } finally {
       setDraftSaving(false)
     }
@@ -146,7 +146,7 @@ export default function NewArticlePage() {
         }
       }
     } catch (error) {
-      console.log('下書きの読み込みに失敗しました')
+      console.error('下書きの読み込みに失敗しました:', error)
     }
   }
 
@@ -180,7 +180,7 @@ export default function NewArticlePage() {
       })
 
       if (response.ok) {
-        const article = await response.json()
+        const _article = await response.json()
         clearDraft() // 投稿成功時に下書きを削除
         setMessage('記事を投稿しました！')
         setTimeout(() => {
@@ -191,6 +191,7 @@ export default function NewArticlePage() {
         setMessage(error.message || '投稿に失敗しました')
       }
     } catch (error) {
+      console.error('投稿処理中にエラーが発生しました:', error);
       setMessage('エラーが発生しました')
     } finally {
       setLoading(false)
